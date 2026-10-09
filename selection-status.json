@@ -1,169 +1,536 @@
 {
-  "input_count": 64,
-  "technical_unique": 64,
-  "published_count": 20,
-  "families": 25,
+  "input_count": 49,
+  "technical_unique": 49,
+  "published_count": 50,
+  "families": 12,
+  "family_counts": {
+    "finland": 1,
+    "poland": 1,
+    "russia": 35,
+    "reserve": 1,
+    "lte": 2,
+    "tg": 1,
+    "grp-47-1-bktakb2nbq4": 1,
+    "grp-48-1-l6cu1jva15s": 1,
+    "grp-50-1-h4mb5hd878g": 1,
+    "grp-56-1-fr5g7jvapm": 1,
+    "grp-57-1-k1vhb93bacg": 1,
+    "proxy": 3
+  },
+  "auto_target": null,
+  "lte_auto_target": {
+    "name": "📶 LTE АВТО",
+    "family": "lte",
+    "role": "lte-auto",
+    "host": "test.bay-glep.test-cdn-kkk.com",
+    "port": 443,
+    "transport": "grpc",
+    "sni": "gazeta-business.ru",
+    "score": 19,
+    "alias_of": "📶 LTE — 1"
+  },
   "selected": [
     {
-      "name": "Самый Быстрый АВТО",
-      "family": "auto",
-      "host": "test999.cool-raven.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇸🇪 Швеция",
-      "family": "sweden",
-      "host": "test.fast-heron.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇫🇮 Финляндия",
-      "family": "finland",
-      "host": "test.pure-helm.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇪🇪 Эстония",
-      "family": "estonia",
-      "host": "test.oak-eagle.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇵🇱 Польша",
-      "family": "poland",
-      "host": "test.wild-vault.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇷🇺 Россия",
-      "family": "russia",
-      "host": "test999.cool-raven.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇱🇹 Литва",
-      "family": "lithuania",
-      "host": "test.pure-cedar.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇱🇻 Латвия",
-      "family": "latvia",
-      "host": "test.wolf-moose.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇳🇱 Нидерланды",
-      "family": "netherlands",
-      "host": "test.dawn-blade.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇹🇷 Турция",
-      "family": "turkey",
-      "host": "test.iron-vale.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇺🇸 США",
-      "family": "usa",
-      "host": "test.mint-lance.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇫🇷 Франция",
-      "family": "france",
-      "host": "test.gold-pond.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇬🇧 Великобритания",
-      "family": "uk",
-      "host": "test.bright-cloud.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇰🇿 Казахстан",
-      "family": "kazakhstan",
-      "host": "test.rare-whale.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇩🇪 Обход Резерв (только Wi-Fi)",
-      "family": "reserve",
-      "host": "test.pure-vault.test-cdn-kkk.com",
-      "port": 9443,
-      "transport": "xhttp",
-      "score": 9
-    },
-    {
-      "name": "🇫🇮 LTE #1",
-      "family": "lte1",
-      "host": "test.rare-glen.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "tcp",
-      "score": 23
-    },
-    {
-      "name": "🇫🇮 LTE #2",
-      "family": "lte2",
-      "host": "test.gold-cliff.test-cdn-kkk.com",
-      "port": 443,
-      "transport": "grpc",
-      "score": 18
-    },
-    {
-      "name": "🇫🇮 LTE #3",
-      "family": "lte3",
+      "name": "📶 LTE АВТО",
+      "family": "lte",
+      "role": "lte-auto",
       "host": "test.bay-glep.test-cdn-kkk.com",
       "port": 443,
       "transport": "grpc",
-      "score": 18
+      "sni": "gazeta-business.ru",
+      "score": 19,
+      "alias_of": "📶 LTE — 1"
     },
     {
-      "name": "[FREE] ТОЛЬКО TG БОТ + САЙТ",
+      "name": "🇫🇮 Финляндия — 1",
+      "family": "finland",
+      "role": "server",
+      "host": "test.pure-helm.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "quick-fi.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇵🇱 Польша — 1",
+      "family": "poland",
+      "role": "server",
+      "host": "test.wild-vault.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "cdn-pl.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 1",
+      "family": "russia",
+      "role": "server",
+      "host": "test.bright-cloud.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "gb.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 2",
+      "family": "russia",
+      "role": "server",
+      "host": "test.dawn-blade.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "nl.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 3",
+      "family": "russia",
+      "role": "server",
+      "host": "test.fast-heron.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "quick.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 4",
+      "family": "russia",
+      "role": "server",
+      "host": "test.oak-eagle.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "cdn-ru.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 5",
+      "family": "russia",
+      "role": "server",
+      "host": "test.pure-vault.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "de.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 6",
+      "family": "russia",
+      "role": "server",
+      "host": "test.rare-glen.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "ads.x5.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 7",
+      "family": "russia",
+      "role": "server",
+      "host": "test999.cool-raven.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "faster.lizeg.ru",
+      "score": 23
+    },
+    {
+      "name": "🇷🇺 Россия — 8",
+      "family": "russia",
+      "role": "server",
+      "host": "test.bay-glep.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "gazeta-business.ru",
+      "score": 19
+    },
+    {
+      "name": "🇷🇺 Россия — 9",
+      "family": "russia",
+      "role": "server",
+      "host": "test.gold-cliff.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "gazeta-business.ru",
+      "score": 19
+    },
+    {
+      "name": "🇷🇺 Россия — 10",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 11",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 12",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 13",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 14",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 15",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 16",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 17",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 18",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 19",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 20",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 21",
+      "family": "russia",
+      "role": "server",
+      "host": "31.177.111.37",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 22",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 23",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 24",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 25",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 26",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 27",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 28",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 29",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 30",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 31",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 32",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 33",
+      "family": "russia",
+      "role": "server",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.gazeta-business.ru",
+      "score": 14
+    },
+    {
+      "name": "🇷🇺 Россия — 34",
+      "family": "russia",
+      "role": "server",
+      "host": "test.iron-glen.test-cdn-kkk.com",
+      "port": 50443,
+      "transport": "grpc",
+      "sni": "ads.x5.ru",
+      "score": 11
+    },
+    {
+      "name": "🇷🇺 Россия — 35",
+      "family": "russia",
+      "role": "server",
+      "host": "test.pure-vault.test-cdn-kkk.com",
+      "port": 9443,
+      "transport": "xhttp",
+      "sni": "de-new.lizeg.ru",
+      "score": 10
+    },
+    {
+      "name": "🇩🇪 Обход Резерв — 1",
+      "family": "reserve",
+      "role": "server",
+      "host": "test.pure-vault.test-cdn-kkk.com",
+      "port": 9443,
+      "transport": "xhttp",
+      "sni": "de-new.lizeg.ru",
+      "score": 10
+    },
+    {
+      "name": "📶 LTE — 1",
+      "family": "lte",
+      "role": "server",
+      "host": "test.bay-glep.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "gazeta-business.ru",
+      "score": 19
+    },
+    {
+      "name": "📶 LTE — 2",
+      "family": "lte",
+      "role": "server",
+      "host": "test.gold-cliff.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "gazeta-business.ru",
+      "score": 19
+    },
+    {
+      "name": "🆓 TG БОТ + САЙТ — 1",
       "family": "tg",
+      "role": "server",
       "host": "teleh.private-networks-zk.com",
       "port": 443,
       "transport": "grpc",
-      "score": 18
+      "sni": "www.google.com",
+      "score": 19
     },
     {
-      "name": "grp-47-1-2ad169irru4",
-      "family": "grp-47-1-2ad169irru4",
+      "name": "🌐 grp-47-1-bktakb2nbq4 — 1",
+      "family": "grp-47-1-bktakb2nbq4",
+      "role": "server",
       "host": "test.tall-blaze.test-cdn-kkk.com",
       "port": 443,
       "transport": "tcp",
+      "sni": "keycdn.com",
       "score": 23
+    },
+    {
+      "name": "🌐 grp-48-1-l6cu1jva15s — 1",
+      "family": "grp-48-1-l6cu1jva15s",
+      "role": "server",
+      "host": "test.mint-lance.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "us.cdn-tech-images.com",
+      "score": 23
+    },
+    {
+      "name": "🌐 grp-50-1-h4mb5hd878g — 1",
+      "family": "grp-50-1-h4mb5hd878g",
+      "role": "server",
+      "host": "test.gold-pond.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "fr.cdn-tech-images.com",
+      "score": 23
+    },
+    {
+      "name": "🌐 grp-56-1-fr5g7jvapm — 1",
+      "family": "grp-56-1-fr5g7jvapm",
+      "role": "server",
+      "host": "test.pure-cedar.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "li.cdn-tech-images.com",
+      "score": 23
+    },
+    {
+      "name": "🌐 grp-57-1-k1vhb93bacg — 1",
+      "family": "grp-57-1-k1vhb93bacg",
+      "role": "server",
+      "host": "test.wolf-moose.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "la.cdn-tech-images.com",
+      "score": 23
+    },
+    {
+      "name": "🌐 proxy — 1",
+      "family": "proxy",
+      "role": "server",
+      "host": "test.iron-vale.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "tr.eu-ffast.com",
+      "score": 23
+    },
+    {
+      "name": "🌐 proxy — 2",
+      "family": "proxy",
+      "role": "server",
+      "host": "test.rare-whale.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "sni": "almaspb.com",
+      "score": 23
+    },
+    {
+      "name": "🌐 proxy — 3",
+      "family": "proxy",
+      "role": "server",
+      "host": "teleh.private-networks-zk.com",
+      "port": 443,
+      "transport": "grpc",
+      "sni": "www.google.com",
+      "score": 19
     }
   ],
-  "curated_at_utc": "2026-10-09T17:57:16+00:00"
+  "curated_at_utc": "2026-10-09T17:58:04+00:00"
 }
