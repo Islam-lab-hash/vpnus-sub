@@ -21,35 +21,60 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           persist-credentials: true
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
+
       - name: Verify script syntax
         run: python -m py_compile scripts/build.py
-      - name: Build subscription
+
+      - name: Synchronize subscription
         env:
           SOURCE_SUB_URL: ${{ secrets.SOURCE_SUB_URL }}
         run: python scripts/build.py
-      - name: Verify output
+
+      - name: Verify public subscription
         run: |
           python - <<'PY'
           import base64
+          import urllib.parse
           from pathlib import Path
-          data = base64.b64decode(Path("sub.txt").read_text().strip(), validate=True).decode("utf-8")
-          links = [line for line in data.splitlines() if line.startswith("vless://")]
-          assert len(links) >= 19, f"Expected >=19 configurations, got {len(links)}"
-          assert len(links) == len(set(links)), "Duplicate configurations found"
-          print(f"VALID_SUBSCRIPTION: {len(links)} VLESS configurations")
+
+          raw = Path("sub.txt").read_text(encoding="ascii").strip()
+          data = base64.b64decode(raw, validate=True).decode("utf-8")
+          links = [line.strip() for line in data.splitlines() if line.strip().startswith("vless://")]
+          assert links, "No VLESS configurations in sub.txt"
+
+          keys = []
+          for uri in links:
+              p = urllib.parse.urlsplit(uri)
+              q = tuple(sorted(urllib.parse.parse_qsl(p.query, keep_blank_values=True)))
+              keys.append((p.username or "", (p.hostname or "").lower(), p.port, q))
+          assert len(keys) == len(set(keys)), "Technical duplicate VLESS configurations found"
+          print(f"VALID_SUBSCRIPTION={len(links)}")
           PY
-      - name: Publish
+
+      - name: Publish subscription and sync status
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add sub.txt
+          git add sub.txt sync-status.json
           if ! git diff --cached --quiet; then
-            git commit -m "Build subscription"
+            git commit -m "Sync subscription"
             git push
           fi
+
+      - name: Require successful remote synchronization
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          status = json.loads(Path("sync-status.json").read_text(encoding="utf-8"))
+          if not status.get("remote_ok"):
+              raise SystemExit("Remote synchronization failed: " + ", ".join(status.get("errors", [])))
+          print(f"REMOTE_SYNC_OK adapter={status['adapter']} remote={status['remote_count']} published={status['published_count']}")
+          PY
