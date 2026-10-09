@@ -27,10 +27,10 @@
     "name": "⚡ Самый быстрый АВТО",
     "family": "auto",
     "role": "provider-auto",
-    "host": "test.pure-vault.test-cdn-kkk.com",
+    "host": "test999.cool-raven.test-cdn-kkk.com",
     "port": 443,
     "transport": "tcp",
-    "sni": "de.lizeg.ru",
+    "sni": "faster.lizeg.ru",
     "score": 23
   },
   "lte_auto_target": {
@@ -49,20 +49,20 @@
       "name": "⚡ Самый быстрый АВТО",
       "family": "auto",
       "role": "provider-auto",
-      "host": "test.pure-vault.test-cdn-kkk.com",
+      "host": "test999.cool-raven.test-cdn-kkk.com",
       "port": 443,
       "transport": "tcp",
-      "sni": "de.lizeg.ru",
+      "sni": "faster.lizeg.ru",
       "score": 23
     },
     {
       "name": "⚡ AUTO провайдера — 2",
       "family": "auto",
       "role": "provider-auto",
-      "host": "test999.cool-raven.test-cdn-kkk.com",
+      "host": "test.pure-vault.test-cdn-kkk.com",
       "port": 443,
       "transport": "tcp",
-      "sni": "faster.lizeg.ru",
+      "sni": "de.lizeg.ru",
       "score": 23
     },
     {
@@ -507,5 +507,5 @@
       "score": 19
     }
   ],
-  "curated_at_utc": "2026-10-09T18:05:24+00:00"
+  "curated_at_utc": "2026-10-09T18:06:39+00:00"
 }
