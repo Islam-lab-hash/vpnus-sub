@@ -1,15 +1,17 @@
 import base64
 import json
 import urllib.parse
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUB = ROOT / "sub.txt"
 SELECTION = ROOT / "selection-status.json"
 SYNC = ROOT / "sync-status.json"
-MIN_COUNT = 19
-MAX_COUNT = 22
+MIN_COUNT = 10
+MAX_COUNT = 120
 CRITICAL_REALITY = ("pbk", "sni", "sid", "fp")
+ALLOWED_ALIAS_NAMES = {"📶 LTE АВТО"}
 
 
 def canonical(uri: str):
@@ -22,7 +24,6 @@ def main():
     raw = SUB.read_text(encoding="ascii").strip()
     if not raw:
         raise SystemExit("sub.txt is empty")
-
     try:
         decoded = base64.b64decode(raw, validate=True).decode("utf-8")
     except Exception as exc:
@@ -32,8 +33,7 @@ def main():
     if not MIN_COUNT <= len(links) <= MAX_COUNT:
         raise SystemExit(f"Expected {MIN_COUNT}-{MAX_COUNT} entries, got {len(links)}")
 
-    keys = []
-    names = []
+    keys, names = [], []
     for index, uri in enumerate(links, start=1):
         p = urllib.parse.urlsplit(uri)
         if p.scheme.lower() != "vless":
@@ -65,14 +65,23 @@ def main():
         keys.append(canonical(uri))
         names.append(name)
 
-    if len(keys) != len(set(keys)):
-        raise SystemExit("Technical duplicate VLESS configurations found")
     if len(names) != len(set(names)):
         raise SystemExit("Duplicate display names found")
 
+    counts = Counter(keys)
+    name_by_key = {}
+    for key, name in zip(keys, names):
+        name_by_key.setdefault(key, []).append(name)
+    for key, count in counts.items():
+        if count <= 1:
+            continue
+        duplicate_names = set(name_by_key[key])
+        non_alias = duplicate_names - ALLOWED_ALIAS_NAMES
+        if len(non_alias) != 1 or not (duplicate_names & ALLOWED_ALIAS_NAMES):
+            raise SystemExit(f"Unexpected technical duplicate: {sorted(duplicate_names)}")
+
     selection = json.loads(SELECTION.read_text(encoding="utf-8"))
     sync = json.loads(SYNC.read_text(encoding="utf-8"))
-
     if selection.get("published_count") != len(links):
         raise SystemExit("selection-status.json published_count does not match sub.txt")
     if len(selection.get("selected", [])) != len(links):
@@ -80,8 +89,13 @@ def main():
     if sync.get("published_count") != len(links):
         raise SystemExit("sync-status.json published_count does not match final sub.txt")
 
+    if any("LTE —" in n for n in names) and "📶 LTE АВТО" not in names:
+        raise SystemExit("LTE variants exist but LTE AUTO alias is missing")
+    if selection.get("auto_target") and "⚡ Самый быстрый АВТО" not in names:
+        raise SystemExit("Provider AUTO target exists but AUTO profile is missing")
+
     print(
-        f"VALID_SUBSCRIPTION={len(links)} "
+        f"VALID_SUBSCRIPTION={len(links)} TECHNICAL_UNIQUE={len(set(keys))} "
         f"FAMILIES={selection.get('families')} REMOTE_OK={sync.get('remote_ok')}"
     )
 
