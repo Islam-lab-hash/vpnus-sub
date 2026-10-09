@@ -2,6 +2,7 @@ import base64
 import os
 import urllib.request
 import urllib.error
+import urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +37,9 @@ if url:
         if not remote:
             raise ValueError("Subscription has no VLESS configurations")
     except urllib.error.HTTPError as exc:
-        print(f"Remote update failed (HTTP {exc.code}); preserving previous subscription")
+        redirect = exc.headers.get("Location", "")
+        target = urllib.parse.urlsplit(urllib.parse.urljoin(url, redirect))
+        print(f"Remote update failed (HTTP {exc.code}); redirect scheme={target.scheme or 'none'}, host={target.hostname or 'none'}; preserving previous subscription")
         raise SystemExit(0)
     except Exception as exc:
         print(f"Remote update failed ({type(exc).__name__}); preserving previous subscription")
