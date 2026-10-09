@@ -1,9 +1,9 @@
-"""Synchronize all usable VLESS variants from the provider.
+"""Synchronize the provider subscription without flattening its structure.
 
-Happy Decoder exposes the same subscription in JSON/TXT/Base64 forms. JSON
-keeps the full Xray transport/REALITY structure, while TXT keeps the provider's
-human remarks. We combine those two views: technical settings come from JSON,
-display identity comes from TXT, then every complete technical variant is kept.
+Happy Decoder exposes several representations of the same source. JSON keeps
+the full Xray transport/REALITY settings; TXT keeps the provider's human
+remarks. We combine those two views, but publish one authoritative technical
+representation instead of merging equivalent JSON/TXT/as-is copies.
 """
 import base64
 import binascii
@@ -91,20 +91,16 @@ def replace_name(uri: str, name: str) -> str:
 
 
 def preserve_human_names(structured: list[str], human: list[str]):
-    """Attach TXT remarks to JSON-derived technical profiles without changing settings."""
     if not structured or not human:
         return structured, 0, "none"
-
-    # Happy's JSON and TXT conversions are generated from the same outbound order.
-    # If endpoint alignment confirms that order, copy remarks by position; this also
-    # handles repeated address:port outbounds that differ in gRPC service/path.
     if len(structured) == len(human):
         matches = sum(endpoint_key(a) == endpoint_key(b) for a, b in zip(structured, human))
         if matches >= max(1, int(len(structured) * 0.60)):
-            enriched = [replace_name(a, display_name(b)) for a, b in zip(structured, human)]
-            return enriched, len(enriched), "ordered-txt"
-
-    # Conservative fallback: only match names inside an identical UUID+host+port queue.
+            return (
+                [replace_name(a, display_name(b)) for a, b in zip(structured, human)],
+                len(structured),
+                "ordered-txt",
+            )
     queues = defaultdict(deque)
     for uri in human:
         queues[endpoint_key(uri)].append(display_name(uri))
@@ -158,15 +154,15 @@ def merge_missing_from_known_good(remote_uri: str, fallback_by_endpoint: dict) -
 
 def repair_and_filter_remote(remote: list[str], fallback: list[str]):
     fallback_by_endpoint = {endpoint_key(x): x for x in fallback}
-    usable, rejected, repaired = [], [], 0
+    usable, rejected, repaired = [], 0, 0
     for uri in remote:
         fixed = merge_missing_from_known_good(uri, fallback_by_endpoint)
         repaired += int(fixed != uri)
         if is_usable_vless(fixed):
             usable.append(fixed)
         else:
-            rejected.append(uri)
-    return dedupe(usable), len(rejected), repaired
+            rejected += 1
+    return dedupe(usable), rejected, repaired
 
 
 def http_get(url: str, user_agent: str = "Mozilla/5.0") -> str:
@@ -204,7 +200,6 @@ def json_outbound_to_vless(outbound: dict) -> list[str]:
     vnext = settings.get("vnext") or []
     result = []
     base_name = str(outbound.get("remarks") or outbound.get("tag") or "VLESS").strip()
-
     for node_index, node in enumerate(vnext, start=1):
         address = str(node.get("address") or "").strip()
         port = node.get("port")
@@ -223,7 +218,6 @@ def json_outbound_to_vless(outbound: dict) -> list[str]:
             qset(query, "type", network)
             if security and security != "none":
                 qset(query, "security", security)
-
             if security == "reality":
                 rs = stream.get("realitySettings") or {}
                 qset(query, "pbk", rs.get("publicKey") or rs.get("password"))
@@ -235,7 +229,6 @@ def json_outbound_to_vless(outbound: dict) -> list[str]:
                 ts = stream.get("tlsSettings") or {}
                 qset(query, "sni", ts.get("serverName"))
                 qset(query, "fp", ts.get("fingerprint"))
-
             if network == "grpc":
                 gs = stream.get("grpcSettings") or {}
                 qset(query, "serviceName", gs.get("serviceName"))
@@ -252,7 +245,6 @@ def json_outbound_to_vless(outbound: dict) -> list[str]:
                 qset(query, "path", ws.get("path"))
                 headers = ws.get("headers") or {}
                 qset(query, "host", headers.get("Host") or headers.get("host"))
-
             name = base_name
             if len(vnext) > 1 or len(users) > 1:
                 name += f" - {node_index}.{user_index}"
@@ -340,43 +332,42 @@ def main():
 
     source_url = os.environ.get("SOURCE_SUB_URL", "").strip()
     remote_results, errors = (fetch_all_remote(source_url) if source_url else ([], ["source:missing-secret"]))
-
-    # Use TXT only as the human-name layer for the structurally complete JSON list.
     by_adapter = {adapter: links for adapter, links in remote_results}
+
     name_source = by_adapter.get("happy-txt") or by_adapter.get("happy-base64") or []
-    name_mode = "none"
-    name_count = 0
+    name_mode, name_count = "none", 0
     if by_adapter.get("happy-json") and name_source:
         enriched, name_count, name_mode = preserve_human_names(by_adapter["happy-json"], name_source)
-        remote_results = [
-            (adapter, enriched if adapter == "happy-json" else links)
-            for adapter, links in remote_results
-        ]
+        by_adapter["happy-json"] = enriched
 
-    merged_remote, merged_seen, contributing, adapter_stats = [], set(), [], []
-    best_raw_count = best_rejected = best_repaired = 0
+    adapter_stats = []
+    candidates = []
     for adapter, raw_links in remote_results:
+        raw_links = by_adapter.get(adapter, raw_links)
         usable, rejected, repaired = repair_and_filter_remote(raw_links, fallback)
-        added = 0
-        for uri in usable:
-            key = canonical_key(uri)
-            if key not in merged_seen:
-                merged_seen.add(key)
-                merged_remote.append(uri)
-                added += 1
-        if added:
-            contributing.append(adapter)
         adapter_stats.append({
             "adapter": adapter, "raw": len(raw_links), "usable": len(usable),
-            "rejected": rejected, "repaired": repaired, "contributed": added,
+            "rejected": rejected, "repaired": repaired,
         })
-        if len(raw_links) > best_raw_count:
-            best_raw_count, best_rejected, best_repaired = len(raw_links), rejected, repaired
+        candidates.append((adapter, usable, len(raw_links), rejected, repaired))
 
+    # Prefer the full JSON structure whenever it is complete. Other formats are
+    # diagnostics/fallbacks, not additional servers: merging them duplicates the
+    # same logical outbounds with slightly different serialization.
+    json_candidate = next((x for x in candidates if x[0] == "happy-json"), None)
+    if json_candidate and json_candidate[1] and len(json_candidate[1]) == json_candidate[2]:
+        primary = json_candidate
+    elif candidates:
+        primary = max(candidates, key=lambda x: (len(x[1]), -x[3], x[2]))
+    else:
+        primary = ("none", [], 0, 0, 0)
+
+    adapter, remote_usable, remote_count, rejected, repaired = primary
     previous = existing_output_links()
-    remote_ok = bool(remote_results)
-    if merged_remote:
-        pre_filter = dedupe(merged_remote + fallback)
+    remote_ok = bool(remote_usable)
+
+    if remote_ok:
+        pre_filter = remote_usable
         write_output(pre_filter)
     elif previous and all(is_usable_vless(x) for x in previous):
         pre_filter = previous
@@ -386,11 +377,11 @@ def main():
 
     status = {
         "remote_ok": remote_ok,
-        "adapter": "+".join(contributing) if contributing else "none",
-        "remote_count": best_raw_count,
-        "remote_usable_count": len(merged_remote),
-        "remote_rejected_count": best_rejected,
-        "remote_repaired_count": best_repaired,
+        "adapter": adapter,
+        "remote_count": remote_count,
+        "remote_usable_count": len(remote_usable),
+        "remote_rejected_count": rejected,
+        "remote_repaired_count": repaired,
         "name_source": name_mode,
         "names_preserved": name_count,
         "pre_filter_count": len(pre_filter),
@@ -403,14 +394,14 @@ def main():
     STATUS.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(
-        f"REMOTE_OK={str(remote_ok).lower()} ADAPTERS={status['adapter']} "
-        f"REMOTE_MAX={best_raw_count} USABLE_MERGED={len(merged_remote)} "
+        f"REMOTE_OK={str(remote_ok).lower()} PRIMARY={adapter} "
+        f"REMOTE={remote_count} USABLE={len(remote_usable)} "
         f"NAMES={name_count}/{name_mode} PRE_FILTER={len(pre_filter)}"
     )
     for stat in adapter_stats:
         print(
             f"ADAPTER {stat['adapter']}: raw={stat['raw']} usable={stat['usable']} "
-            f"rejected={stat['rejected']} repaired={stat['repaired']} contributed={stat['contributed']}"
+            f"rejected={stat['rejected']} repaired={stat['repaired']}"
         )
     if errors:
         print("ADAPTER_ERRORS=" + ",".join(errors))
@@ -419,10 +410,9 @@ def main():
     if summary:
         with open(summary, "a", encoding="utf-8") as f:
             f.write("### Subscription sync\n\n")
-            f.write(f"Remote max: **{best_raw_count}**  \n")
-            f.write(f"Merged usable variants: **{len(merged_remote)}**  \n")
+            f.write(f"Authoritative source: **{adapter}**  \n")
+            f.write(f"Usable provider variants: **{len(remote_usable)}**  \n")
             f.write(f"Provider names restored: **{name_count}** ({name_mode})  \n")
-            f.write(f"Candidate pool: **{len(pre_filter)}**  \n")
 
 
 if __name__ == "__main__":
