@@ -1,0 +1,168 @@
+{
+  "input_count": 45,
+  "technical_unique": 45,
+  "published_count": 20,
+  "families": 20,
+  "selected": [
+    {
+      "name": "⚡ Самый быстрый АВТО",
+      "family": "auto",
+      "host": "test999.cool-raven.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇩🇪 Германия",
+      "family": "germany",
+      "host": "91.240.87.221",
+      "port": 443,
+      "transport": "grpc",
+      "score": 13
+    },
+    {
+      "name": "🇸🇪 Швеция",
+      "family": "sweden",
+      "host": "test.fast-heron.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇫🇮 Финляндия",
+      "family": "finland",
+      "host": "test.pure-helm.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇪🇪 Эстония",
+      "family": "estonia",
+      "host": "test.oak-eagle.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇵🇱 Польша",
+      "family": "poland",
+      "host": "test.wild-vault.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇷🇺 Россия",
+      "family": "russia",
+      "host": "test.tall-blaze.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇱🇹 Литва",
+      "family": "lithuania",
+      "host": "test.pure-cedar.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇱🇻 Латвия",
+      "family": "latvia",
+      "host": "test.wolf-moose.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇳🇱 Нидерланды",
+      "family": "netherlands",
+      "host": "test.dawn-blade.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇹🇷 Турция",
+      "family": "turkey",
+      "host": "test.iron-vale.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇺🇸 США",
+      "family": "usa",
+      "host": "test.mint-lance.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇫🇷 Франция",
+      "family": "france",
+      "host": "test.gold-pond.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇬🇧 Великобритания",
+      "family": "uk",
+      "host": "test.bright-cloud.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🇰🇿 Казахстан",
+      "family": "kazakhstan",
+      "host": "test.rare-whale.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "🛟 Резерв",
+      "family": "reserve",
+      "host": "test.pure-vault.test-cdn-kkk.com",
+      "port": 9443,
+      "transport": "xhttp",
+      "score": 9
+    },
+    {
+      "name": "📶 LTE #1",
+      "family": "lte1",
+      "host": "test.rare-glen.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 20
+    },
+    {
+      "name": "📶 LTE #2",
+      "family": "lte2",
+      "host": "test.gold-cliff.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "grpc",
+      "score": 18
+    },
+    {
+      "name": "📶 LTE #3",
+      "family": "lte3",
+      "host": "test.bay-glep.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "grpc",
+      "score": 18
+    },
+    {
+      "name": "🆓 TG + Сайт",
+      "family": "tg",
+      "host": "teleh.private-networks-zk.com",
+      "port": 443,
+      "transport": "grpc",
+      "score": 18
+    }
+  ]
+}
