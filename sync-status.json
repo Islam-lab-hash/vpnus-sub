@@ -1,15 +1,51 @@
 {
   "remote_ok": true,
-  "adapter": "happy-base64",
+  "adapter": "happy-json+happy-txt",
   "remote_count": 45,
-  "remote_usable_count": 19,
-  "remote_rejected_count": 26,
-  "remote_repaired_count": 19,
-  "pre_filter_count": 19,
-  "published_count": 19,
+  "remote_usable_count": 64,
+  "remote_rejected_count": 0,
+  "remote_repaired_count": 0,
+  "pre_filter_count": 64,
+  "published_count": 20,
   "fallback_count": 19,
-  "errors": [],
-  "checked_at_utc": "2026-10-09T17:49:52+00:00",
-  "distinct_families": 19,
-  "curated_at_utc": "2026-10-09T17:49:52+00:00"
+  "adapter_stats": [
+    {
+      "adapter": "happy-json",
+      "raw": 45,
+      "usable": 45,
+      "rejected": 0,
+      "repaired": 0,
+      "contributed": 45
+    },
+    {
+      "adapter": "happy-txt",
+      "raw": 45,
+      "usable": 19,
+      "rejected": 26,
+      "repaired": 19,
+      "contributed": 19
+    },
+    {
+      "adapter": "happy-base64",
+      "raw": 45,
+      "usable": 19,
+      "rejected": 26,
+      "repaired": 19,
+      "contributed": 0
+    },
+    {
+      "adapter": "happy-as-is",
+      "raw": 45,
+      "usable": 45,
+      "rejected": 0,
+      "repaired": 0,
+      "contributed": 0
+    }
+  ],
+  "errors": [
+    "direct:HTTP_307"
+  ],
+  "checked_at_utc": "2026-10-09T17:57:16+00:00",
+  "distinct_families": 25,
+  "curated_at_utc": "2026-10-09T17:57:16+00:00"
 }

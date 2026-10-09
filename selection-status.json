@@ -1,8 +1,8 @@
 {
-  "input_count": 19,
-  "technical_unique": 19,
-  "published_count": 19,
-  "families": 19,
+  "input_count": 64,
+  "technical_unique": 64,
+  "published_count": 20,
+  "families": 25,
   "selected": [
     {
       "name": "Самый Быстрый АВТО",
@@ -47,7 +47,7 @@
     {
       "name": "🇷🇺 Россия",
       "family": "russia",
-      "host": "test.tall-blaze.test-cdn-kkk.com",
+      "host": "test999.cool-raven.test-cdn-kkk.com",
       "port": 443,
       "transport": "tcp",
       "score": 23
@@ -155,7 +155,15 @@
       "port": 443,
       "transport": "grpc",
       "score": 18
+    },
+    {
+      "name": "grp-47-1-2ad169irru4",
+      "family": "grp-47-1-2ad169irru4",
+      "host": "test.tall-blaze.test-cdn-kkk.com",
+      "port": 443,
+      "transport": "tcp",
+      "score": 23
     }
   ],
-  "curated_at_utc": "2026-10-09T17:49:52+00:00"
+  "curated_at_utc": "2026-10-09T17:57:16+00:00"
 }
