@@ -6,6 +6,7 @@ on:
       - sources.txt
       - scripts/build.py
       - scripts/filter_top.py
+      - scripts/publish_yandex.py
       - .github/workflows/build.yml
   schedule:
     - cron: '17 */6 * * *'
@@ -33,6 +34,7 @@ jobs:
         run: |
           python -m py_compile scripts/build.py
           python -m py_compile scripts/filter_top.py
+          python -m py_compile scripts/publish_yandex.py
 
       - name: Synchronize source subscription
         env:
@@ -70,6 +72,21 @@ jobs:
           assert selection['published_count'] == len(links)
           print(f'CURATED_SUBSCRIPTION={len(links)} DISTINCT_FAMILIES={selection["families"]}')
           PY
+
+      - name: Publish to Yandex Object Storage mirror
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ru-central1
+          YC_BUCKET: ${{ secrets.YC_BUCKET }}
+          YC_OBJECT_KEY: s
+        run: |
+          if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ] || [ -z "$YC_BUCKET" ]; then
+            echo "YANDEX_MIRROR_SKIPPED: add YC_ACCESS_KEY_ID, YC_SECRET_ACCESS_KEY and YC_BUCKET secrets"
+            exit 0
+          fi
+          python -m pip install --disable-pip-version-check -q boto3
+          python scripts/publish_yandex.py
 
       - name: Publish subscription and status
         run: |
