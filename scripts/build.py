@@ -1,6 +1,7 @@
 import base64
 import os
 import urllib.request
+import urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +35,9 @@ if url:
         remote = parse(body.decode("utf-8-sig"))
         if not remote:
             raise ValueError("Subscription has no VLESS configurations")
+    except urllib.error.HTTPError as exc:
+        print(f"Remote update failed (HTTP {exc.code}); preserving previous subscription")
+        raise SystemExit(0)
     except Exception as exc:
         print(f"Remote update failed ({type(exc).__name__}); preserving previous subscription")
         raise SystemExit(0)
