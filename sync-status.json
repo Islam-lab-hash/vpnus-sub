@@ -1,12 +1,15 @@
 {
   "remote_ok": true,
-  "adapter": "happy-path",
+  "adapter": "happy-base64",
   "remote_count": 45,
-  "pre_filter_count": 45,
-  "published_count": 20,
+  "remote_usable_count": 19,
+  "remote_rejected_count": 26,
+  "remote_repaired_count": 19,
+  "pre_filter_count": 19,
+  "published_count": 19,
   "fallback_count": 19,
   "errors": [],
-  "checked_at_utc": "2026-10-09T16:22:57+00:00",
-  "distinct_families": 20,
-  "curated_at_utc": "2026-10-09T16:22:57+00:00"
+  "checked_at_utc": "2026-10-09T17:46:26+00:00",
+  "distinct_families": 19,
+  "curated_at_utc": "2026-10-09T17:46:26+00:00"
 }
