@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: subscription-build
+  group: vpnus-sub-build
   cancel-in-progress: false
 
 jobs:
@@ -22,21 +22,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Generate subscription
+      - name: Verify script syntax
+        run: python -m py_compile scripts/build.py
+      - name: Build subscription
         env:
           SOURCE_SUB_URL: ${{ secrets.SOURCE_SUB_URL }}
         run: python scripts/build.py
-      - name: Publish updated subscription
+      - name: Verify output
         run: |
-          if [ -f sub.txt ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add sub.txt
-            if ! git diff --cached --quiet; then
-              git commit -m "Update subscription"
-              git push
-            fi
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+          data = base64.b64decode(Path("sub.txt").read_text().strip(), validate=True).decode("utf-8")
+          links = [line for line in data.splitlines() if line.startswith("vless://")]
+          assert len(links) >= 19, f"Expected >=19 configurations, got {len(links)}"
+          assert len(links) == len(set(links)), "Duplicate configurations found"
+          print(f"VALID_SUBSCRIPTION: {len(links)} VLESS configurations")
+          PY
+      - name: Publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sub.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Build subscription"
+            git push
           fi
