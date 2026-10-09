@@ -6,10 +6,16 @@ on:
       - sources.txt
       - scripts/build.py
       - .github/workflows/build.yml
+  schedule:
+    - cron: '17 */6 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: subscription-build
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -20,6 +26,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Generate subscription
+        env:
+          SOURCE_SUB_URL: ${{ secrets.SOURCE_SUB_URL }}
         run: python scripts/build.py
       - name: Publish updated subscription
         run: |
