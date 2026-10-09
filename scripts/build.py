@@ -1,5 +1,6 @@
 import base64
 import binascii
+import hashlib
 import os
 import urllib.error
 import urllib.parse
@@ -26,7 +27,12 @@ def parse(text):
 
 def get_subscription(url):
     current = url
-    for hop in range(6):
+    seen = set()
+    for hop in range(10):
+        fingerprint = hashlib.sha256(current.encode("utf-8")).hexdigest()[:12]
+        if fingerprint in seen:
+            raise ValueError(f"Redirect loop detected at URL fingerprint {fingerprint}")
+        seen.add(fingerprint)
         parsed = urllib.parse.urlsplit(current)
         if parsed.scheme != "https" or not parsed.hostname:
             raise ValueError("Subscription target is not HTTPS")
@@ -42,13 +48,15 @@ def get_subscription(url):
                 raise ValueError(f"Source returned HTTP {exc.code}") from exc
             location = exc.headers.get("Location", "")
             target = urllib.parse.urlsplit(urllib.parse.urljoin(current, location))
-            print(f"Redirect HTTP {exc.code}: scheme={target.scheme or 'none'}, host={target.hostname or 'none'}")
+            next_url = urllib.parse.urljoin(current, location)
+            next_fp = hashlib.sha256(next_url.encode("utf-8")).hexdigest()[:12]
+            print(f"Redirect HTTP {exc.code}: {fingerprint} -> {next_fp}, scheme={target.scheme or 'none'}, host={target.hostname or 'none'}")
             if target.scheme != "https":
                 raise ValueError("Redirect is not HTTPS; may be a client-specific link")
             if not location:
                 raise ValueError("Redirect has no Location header")
-            current = urllib.parse.urljoin(current, location)
-    raise ValueError("Too many redirects")
+            current = next_url
+    raise ValueError("Too many redirects (10)")
 
 local = parse(SOURCE.read_text(encoding="utf-8"))
 remote = []
