@@ -64,6 +64,9 @@ HOST_HINTS = {
     "gb": "uk", "uk": "uk", "kz": "kazakhstan",
 }
 
+PREFERRED_AUTO_HOST = "test999.cool-raven.test-cdn-kkk.com"
+PREFERRED_AUTO_SNI = "faster.lizeg.ru"
+
 
 def decode_sub():
     raw = SUB.read_text(encoding="ascii").strip()
@@ -103,6 +106,21 @@ def score(uri):
     return s
 
 
+def auto_rank(uri):
+    """Prefer the provider's known Fast AUTO endpoint before generic AUTO variants."""
+    p = urllib.parse.urlsplit(uri)
+    q = dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
+    name = original_name(uri).lower()
+    host = (p.hostname or "").lower()
+    sni = q.get("sni", "").lower()
+    preferred = int(
+        host == PREFERRED_AUTO_HOST
+        or sni == PREFERRED_AUTO_SNI
+        or "самый быстрый" in name
+    )
+    return (-preferred, -score(uri), host, sni, name)
+
+
 def family(uri):
     name = original_name(uri)
     low = name.lower()
@@ -112,9 +130,10 @@ def family(uri):
         if any(w in low for w in words):
             return key
 
+    # Fallback is intentionally hostname-only. Generic REALITY SNI values such as
+    # *.ru must not relabel an otherwise unknown profile as Russia.
     p = urllib.parse.urlsplit(uri)
-    q = dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
-    hay = " ".join([p.hostname or "", q.get("sni", "")]).lower()
+    hay = (p.hostname or "").lower()
     for code, key in HOST_HINTS.items():
         if re.search(rf"(^|[.\-_]){re.escape(code)}([.\-_]|$)", hay):
             return key
@@ -165,8 +184,7 @@ def metadata(uri, name, fam, role="server", alias_of=None):
 def main():
     links = decode_sub()
 
-    # Remove only exact technical duplicates. Different hosts/transports/SNI remain,
-    # even when they represent the same country or have the same display name.
+    # Keep all distinct technical variants; remove only exact technical duplicates.
     uniq, seen = [], set()
     for link in links:
         key = canonical(link)
@@ -177,17 +195,18 @@ def main():
     groups = defaultdict(list)
     for link in uniq:
         groups[family(link)].append(link)
-    for vals in groups.values():
-        vals.sort(key=lambda x: (-score(x), (urllib.parse.urlsplit(x).hostname or ""), original_name(x)))
+
+    for fam, vals in groups.items():
+        if fam == "auto":
+            vals.sort(key=auto_rank)
+        else:
+            vals.sort(key=lambda x: (-score(x), (urllib.parse.urlsplit(x).hostname or ""), original_name(x)))
 
     ordered_families = [x for x in PRIORITY if x in groups]
     ordered_families += sorted(x for x in groups if x not in ordered_families)
 
-    output = []
-    chosen = []
+    output, chosen = [], []
 
-    # Provider AUTO stays intact: it is one real provider endpoint, not a client-side
-    # load-balancer. We keep its complete parameters and put it first.
     if groups.get("auto"):
         for idx, uri in enumerate(groups["auto"], start=1):
             validate_uri(uri)
@@ -195,14 +214,13 @@ def main():
             output.append(rename(uri, name))
             chosen.append(metadata(uri, name, "auto", role="provider-auto"))
 
-    # LTE AUTO is an alias of the strongest currently available LTE profile.
-    # It updates automatically when the source changes; numbered LTE variants remain too.
+    # Plain VLESS subscriptions have no native latency-based proxy group. LTE AUTO
+    # is therefore a stable alias to the strongest complete LTE profile at build time.
     if groups.get("lte"):
         lte_target = groups["lte"][0]
-        lte_target_name = "📶 LTE — 1"
         alias_name = "📶 LTE АВТО"
         output.append(rename(lte_target, alias_name))
-        chosen.append(metadata(lte_target, alias_name, "lte", role="lte-auto", alias_of=lte_target_name))
+        chosen.append(metadata(uri=lte_target, name=alias_name, fam="lte", role="lte-auto", alias_of="📶 LTE — 1"))
 
     for fam in ordered_families:
         if fam == "auto":
@@ -211,7 +229,6 @@ def main():
         base = base_display(fam, original_name(vals[0]))
         for idx, uri in enumerate(vals, start=1):
             validate_uri(uri)
-            # Always number variants so repeated locations are obvious and sortable.
             name = f"{base} — {idx}"
             output.append(rename(uri, name))
             chosen.append(metadata(uri, name, fam))
@@ -223,8 +240,10 @@ def main():
     if len(names) != len(set(names)):
         raise SystemExit("Duplicate display names remain after numbering")
 
-    payload = ("\n".join(output) + "\n").encode("utf-8")
-    SUB.write_text(base64.b64encode(payload).decode("ascii") + "\n", encoding="ascii")
+    SUB.write_text(
+        base64.b64encode(("\n".join(output) + "\n").encode("utf-8")).decode("ascii") + "\n",
+        encoding="ascii",
+    )
 
     auto_target = chosen[0] if chosen and chosen[0].get("role") == "provider-auto" else None
     lte_auto_target = next((x for x in chosen if x.get("role") == "lte-auto"), None)
@@ -252,6 +271,10 @@ def main():
         f"CURATED input={len(links)} technical_unique={len(uniq)} "
         f"families={len(groups)} published={len(output)}"
     )
+    if auto_target:
+        print(f"AUTO_TARGET={auto_target['host']}:{auto_target['port']} sni={auto_target.get('sni')}")
+    if lte_auto_target:
+        print(f"LTE_AUTO_TARGET={lte_auto_target['host']}:{lte_auto_target['port']} sni={lte_auto_target.get('sni')}")
     print("FAMILY_COUNTS=" + json.dumps(status["family_counts"], ensure_ascii=False, sort_keys=True))
 
 
