@@ -1,11 +1,11 @@
 {
-  "input_count": 45,
-  "technical_unique": 45,
+  "input_count": 20,
+  "technical_unique": 20,
   "published_count": 20,
   "families": 20,
   "selected": [
     {
-      "name": "⚡ Самый быстрый АВТО",
+      "name": "Самый Быстрый АВТО",
       "family": "auto",
       "host": "test999.cool-raven.test-cdn-kkk.com",
       "port": 443,
@@ -125,7 +125,7 @@
       "score": 20
     },
     {
-      "name": "🛟 Резерв",
+      "name": "🇩🇪 Обход Резерв (только Wi-Fi)",
       "family": "reserve",
       "host": "test.pure-vault.test-cdn-kkk.com",
       "port": 9443,
@@ -133,7 +133,7 @@
       "score": 9
     },
     {
-      "name": "📶 LTE #1",
+      "name": "🇫🇮 LTE #1",
       "family": "lte1",
       "host": "test.rare-glen.test-cdn-kkk.com",
       "port": 443,
@@ -141,7 +141,7 @@
       "score": 20
     },
     {
-      "name": "📶 LTE #2",
+      "name": "🇫🇮 LTE #2",
       "family": "lte2",
       "host": "test.gold-cliff.test-cdn-kkk.com",
       "port": 443,
@@ -149,7 +149,7 @@
       "score": 18
     },
     {
-      "name": "📶 LTE #3",
+      "name": "🇫🇮 LTE #3",
       "family": "lte3",
       "host": "test.bay-glep.test-cdn-kkk.com",
       "port": 443,
@@ -157,7 +157,7 @@
       "score": 18
     },
     {
-      "name": "🆓 TG + Сайт",
+      "name": "[FREE] ТОЛЬКО TG БОТ + САЙТ",
       "family": "tg",
       "host": "teleh.private-networks-zk.com",
       "port": 443,
