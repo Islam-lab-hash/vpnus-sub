@@ -7,6 +7,7 @@ on:
       - scripts/build.py
       - scripts/filter_top.py
       - scripts/validate.py
+      - scripts/shorten.py
       - scripts/publish_yandex.py
       - .github/workflows/build.yml
   schedule:
@@ -40,6 +41,7 @@ jobs:
           python -m py_compile scripts/build.py
           python -m py_compile scripts/filter_top.py
           python -m py_compile scripts/validate.py
+          python -m py_compile scripts/shorten.py
           python -m py_compile scripts/publish_yandex.py
 
       - name: Synchronize source subscription
@@ -59,12 +61,19 @@ jobs:
           set -euo pipefail
           python scripts/validate.py
 
+      - name: Create or verify Yandex short URL
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python scripts/shorten.py
+
       - name: Publish subscription and status to GitHub
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add sub.txt sync-status.json selection-status.json
+          if [ -f short-url.txt ]; then git add short-url.txt; fi
 
           if git diff --cached --quiet; then
             echo "GITHUB_PUBLISH_NO_CHANGES"
