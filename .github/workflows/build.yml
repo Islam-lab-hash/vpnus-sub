@@ -5,6 +5,7 @@ on:
     paths:
       - sources.txt
       - scripts/build.py
+      - scripts/filter_top.py
       - .github/workflows/build.yml
   schedule:
     - cron: '17 */6 * * *'
@@ -28,43 +29,55 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Verify script syntax
-        run: python -m py_compile scripts/build.py
+      - name: Verify scripts
+        run: |
+          python -m py_compile scripts/build.py
+          python -m py_compile scripts/filter_top.py
 
-      - name: Synchronize subscription
+      - name: Synchronize source subscription
         env:
           SOURCE_SUB_URL: ${{ secrets.SOURCE_SUB_URL }}
         run: python scripts/build.py
 
-      - name: Verify public subscription
+      - name: Keep top distinct locations and clean names
+        run: python scripts/filter_top.py
+
+      - name: Verify curated public subscription
         run: |
           python - <<'PY'
           import base64
+          import json
           import urllib.parse
           from pathlib import Path
 
-          raw = Path("sub.txt").read_text(encoding="ascii").strip()
-          data = base64.b64decode(raw, validate=True).decode("utf-8")
-          links = [line.strip() for line in data.splitlines() if line.strip().startswith("vless://")]
-          assert links, "No VLESS configurations in sub.txt"
+          raw = Path('sub.txt').read_text(encoding='ascii').strip()
+          data = base64.b64decode(raw, validate=True).decode('utf-8')
+          links = [line.strip() for line in data.splitlines() if line.strip().startswith('vless://')]
+          assert 19 <= len(links) <= 22, f'Expected 19-22 curated configs, got {len(links)}'
 
           keys = []
+          names = []
           for uri in links:
               p = urllib.parse.urlsplit(uri)
               q = tuple(sorted(urllib.parse.parse_qsl(p.query, keep_blank_values=True)))
-              keys.append((p.username or "", (p.hostname or "").lower(), p.port, q))
-          assert len(keys) == len(set(keys)), "Technical duplicate VLESS configurations found"
-          print(f"VALID_SUBSCRIPTION={len(links)}")
+              keys.append((p.username or '', (p.hostname or '').lower(), p.port, q))
+              names.append(urllib.parse.unquote(p.fragment or ''))
+
+          assert len(keys) == len(set(keys)), 'Technical duplicate VLESS configurations found'
+          assert len(names) == len(set(names)), 'Duplicate display names found'
+
+          selection = json.loads(Path('selection-status.json').read_text(encoding='utf-8'))
+          assert selection['published_count'] == len(links)
+          print(f'CURATED_SUBSCRIPTION={len(links)} DISTINCT_FAMILIES={selection["families"]}')
           PY
 
-      - name: Publish subscription and sync status
-        if: always()
+      - name: Publish subscription and status
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add sub.txt sync-status.json
+          git add sub.txt sync-status.json selection-status.json
           if ! git diff --cached --quiet; then
-            git commit -m "Sync subscription"
+            git commit -m "Sync curated subscription"
             git push
           fi
 
@@ -73,8 +86,12 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          status = json.loads(Path("sync-status.json").read_text(encoding="utf-8"))
-          if not status.get("remote_ok"):
-              raise SystemExit("Remote synchronization failed: " + ", ".join(status.get("errors", [])))
-          print(f"REMOTE_SYNC_OK adapter={status['adapter']} remote={status['remote_count']} published={status['published_count']}")
+          status = json.loads(Path('sync-status.json').read_text(encoding='utf-8'))
+          if not status.get('remote_ok'):
+              raise SystemExit('Remote synchronization failed: ' + ', '.join(status.get('errors', [])))
+          selection = json.loads(Path('selection-status.json').read_text(encoding='utf-8'))
+          print(
+              f"REMOTE_SYNC_OK adapter={status['adapter']} remote={status['remote_count']} "
+              f"curated={selection['published_count']} families={selection['families']}"
+          )
           PY
