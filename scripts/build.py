@@ -1,9 +1,9 @@
-"""Synchronize the provider subscription without flattening its structure.
+"""Build the public VLESS subscription from the provider's full Xray data.
 
-Happy Decoder exposes several representations of the same source. JSON keeps
-the full Xray transport/REALITY settings; TXT keeps the provider's human
-remarks. We combine those two views, but publish one authoritative technical
-representation instead of merging equivalent JSON/TXT/as-is copies.
+The provider is exposed through Happy Decoder in multiple forms. JSON is used
+for transport/REALITY settings, while TXT is used only for human remarks. Names
+are matched inside the same UUID+host+port endpoint queue, so a country label is
+never copied to an unrelated server merely because its global position changed.
 """
 import base64
 import binascii
@@ -39,10 +39,9 @@ def decode_subscription(text: str) -> list[str]:
             return links
         try:
             compact = "".join(text.split())
-            raw = base64.b64decode(
+            text = base64.b64decode(
                 compact + "=" * (-len(compact) % 4), altchars=b"-_", validate=True
-            )
-            text = raw.decode("utf-8-sig").strip()
+            ).decode("utf-8-sig").strip()
         except (binascii.Error, UnicodeError, ValueError):
             break
     return []
@@ -50,8 +49,7 @@ def decode_subscription(text: str) -> list[str]:
 
 def split_uri(uri: str):
     p = urllib.parse.urlsplit(uri)
-    q = dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
-    return p, q
+    return p, dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
 
 
 def endpoint_key(uri: str):
@@ -62,8 +60,6 @@ def endpoint_key(uri: str):
 def canonical_key(uri: str):
     try:
         p, q = split_uri(uri)
-        if p.scheme.lower() != "vless" or not p.hostname:
-            return ("raw", uri.split("#", 1)[0])
         return (
             p.scheme.lower(), urllib.parse.unquote(p.username or ""),
             (p.hostname or "").lower(), p.port, tuple(sorted(q.items())),
@@ -72,7 +68,7 @@ def canonical_key(uri: str):
         return ("raw", uri.split("#", 1)[0])
 
 
-def dedupe(links: list[str]) -> list[str]:
+def dedupe(links):
     out, seen = [], set()
     for link in links:
         key = canonical_key(link)
@@ -90,29 +86,20 @@ def replace_name(uri: str, name: str) -> str:
     return uri.split("#", 1)[0] + "#" + urllib.parse.quote(name or "VLESS", safe="")
 
 
-def preserve_human_names(structured: list[str], human: list[str]):
-    if not structured or not human:
-        return structured, 0, "none"
-    if len(structured) == len(human):
-        matches = sum(endpoint_key(a) == endpoint_key(b) for a, b in zip(structured, human))
-        if matches >= max(1, int(len(structured) * 0.60)):
-            return (
-                [replace_name(a, display_name(b)) for a, b in zip(structured, human)],
-                len(structured),
-                "ordered-txt",
-            )
+def attach_txt_names(structured: list[str], human: list[str]):
+    """Match names only within the same endpoint, preserving repeated-endpoint order."""
     queues = defaultdict(deque)
     for uri in human:
         queues[endpoint_key(uri)].append(display_name(uri))
-    enriched, changed = [], 0
+    out, matched = [], 0
     for uri in structured:
-        names = queues.get(endpoint_key(uri))
-        if names:
-            enriched.append(replace_name(uri, names.popleft()))
-            changed += 1
+        queue = queues.get(endpoint_key(uri))
+        if queue:
+            out.append(replace_name(uri, queue.popleft()))
+            matched += 1
         else:
-            enriched.append(uri)
-    return enriched, changed, "endpoint-txt"
+            out.append(uri)
+    return out, matched
 
 
 def is_usable_vless(uri: str) -> bool:
@@ -132,31 +119,33 @@ def is_usable_vless(uri: str) -> bool:
         return False
 
 
-def merge_missing_from_known_good(remote_uri: str, fallback_by_endpoint: dict) -> str:
-    known = fallback_by_endpoint.get(endpoint_key(remote_uri))
+def repair_exact(uri: str, known_by_endpoint: dict) -> str:
+    known = known_by_endpoint.get(endpoint_key(uri))
     if not known:
-        return remote_uri
-    rp, rq = split_uri(remote_uri)
+        return uri
+    p, q = split_uri(uri)
     _, kq = split_uri(known)
     changed = False
     for key in (
         "pbk", "sni", "sid", "fp", "flow", "security", "type", "encryption",
         "serviceName", "authority", "path", "host", "mode", "spx",
     ):
-        if not rq.get(key) and kq.get(key):
-            rq[key] = kq[key]
+        if not q.get(key) and kq.get(key):
+            q[key] = kq[key]
             changed = True
     if not changed:
-        return remote_uri
-    query = urllib.parse.urlencode(rq, doseq=False, safe="/:,@")
-    return urllib.parse.urlunsplit((rp.scheme, rp.netloc, rp.path, query, rp.fragment))
+        return uri
+    return urllib.parse.urlunsplit((
+        p.scheme, p.netloc, p.path,
+        urllib.parse.urlencode(q, safe="/:,@"), p.fragment,
+    ))
 
 
-def repair_and_filter_remote(remote: list[str], fallback: list[str]):
-    fallback_by_endpoint = {endpoint_key(x): x for x in fallback}
+def repair_filter(links, fallback):
+    known = {endpoint_key(x): x for x in fallback}
     usable, rejected, repaired = [], 0, 0
-    for uri in remote:
-        fixed = merge_missing_from_known_good(uri, fallback_by_endpoint)
+    for uri in links:
+        fixed = repair_exact(uri, known)
         repaired += int(fixed != uri)
         if is_usable_vless(fixed):
             usable.append(fixed)
@@ -165,15 +154,15 @@ def repair_and_filter_remote(remote: list[str], fallback: list[str]):
     return dedupe(usable), rejected, repaired
 
 
-def http_get(url: str, user_agent: str = "Mozilla/5.0") -> str:
+def http_get(url: str, ua="Mozilla/5.0") -> str:
     last_error = None
     for attempt in range(1, HTTP_ATTEMPTS + 1):
-        req = urllib.request.Request(url, headers={"User-Agent": user_agent, "Accept": "*/*"})
+        req = urllib.request.Request(url, headers={"User-Agent": ua, "Accept": "*/*"})
         try:
             with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as response:
                 body = response.read(MAX_BYTES + 1)
                 if len(body) > MAX_BYTES:
-                    raise ValueError("response exceeds 3 MB")
+                    raise ValueError("response too large")
                 return body.decode("utf-8-sig")
         except urllib.error.HTTPError as exc:
             last_error = exc
@@ -187,76 +176,70 @@ def http_get(url: str, user_agent: str = "Mozilla/5.0") -> str:
     raise RuntimeError("request failed") from last_error
 
 
-def qset(query: dict, key: str, value):
+def qset(q, key, value):
     if value is not None and value != "":
-        query[key] = str(value)
+        q[key] = str(value)
 
 
-def json_outbound_to_vless(outbound: dict) -> list[str]:
+def outbound_to_vless(outbound):
     if str(outbound.get("protocol", "")).lower() != "vless":
         return []
     settings = outbound.get("settings") or {}
     stream = outbound.get("streamSettings") or {}
-    vnext = settings.get("vnext") or []
+    name = str(outbound.get("remarks") or outbound.get("tag") or "VLESS").strip()
     result = []
-    base_name = str(outbound.get("remarks") or outbound.get("tag") or "VLESS").strip()
-    for node_index, node in enumerate(vnext, start=1):
-        address = str(node.get("address") or "").strip()
-        port = node.get("port")
-        users = node.get("users") or []
+    for node in settings.get("vnext") or []:
+        address, port = str(node.get("address") or "").strip(), node.get("port")
         if not address or not port:
             continue
-        for user_index, user in enumerate(users, start=1):
+        for user in node.get("users") or []:
             uid = str(user.get("id") or "").strip()
             if not uid:
                 continue
-            query = {}
-            qset(query, "encryption", user.get("encryption") or "none")
-            qset(query, "flow", user.get("flow"))
+            q = {}
+            qset(q, "encryption", user.get("encryption") or "none")
+            qset(q, "flow", user.get("flow"))
             network = str(stream.get("network") or "tcp").lower()
             security = str(stream.get("security") or "none").lower()
-            qset(query, "type", network)
-            if security and security != "none":
-                qset(query, "security", security)
+            qset(q, "type", network)
+            if security != "none":
+                qset(q, "security", security)
             if security == "reality":
-                rs = stream.get("realitySettings") or {}
-                qset(query, "pbk", rs.get("publicKey") or rs.get("password"))
-                qset(query, "sni", rs.get("serverName"))
-                qset(query, "sid", rs.get("shortId"))
-                qset(query, "fp", rs.get("fingerprint"))
-                qset(query, "spx", rs.get("spiderX"))
+                r = stream.get("realitySettings") or {}
+                qset(q, "pbk", r.get("publicKey") or r.get("password"))
+                qset(q, "sni", r.get("serverName"))
+                qset(q, "sid", r.get("shortId"))
+                qset(q, "fp", r.get("fingerprint"))
+                qset(q, "spx", r.get("spiderX"))
             elif security == "tls":
-                ts = stream.get("tlsSettings") or {}
-                qset(query, "sni", ts.get("serverName"))
-                qset(query, "fp", ts.get("fingerprint"))
+                t = stream.get("tlsSettings") or {}
+                qset(q, "sni", t.get("serverName"))
+                qset(q, "fp", t.get("fingerprint"))
             if network == "grpc":
-                gs = stream.get("grpcSettings") or {}
-                qset(query, "serviceName", gs.get("serviceName"))
-                qset(query, "authority", gs.get("authority"))
-                if gs.get("multiMode"):
-                    qset(query, "mode", "multi")
+                g = stream.get("grpcSettings") or {}
+                qset(q, "serviceName", g.get("serviceName"))
+                qset(q, "authority", g.get("authority"))
+                if g.get("multiMode"):
+                    qset(q, "mode", "multi")
             elif network in ("xhttp", "splithttp"):
-                xs = stream.get("xhttpSettings") or stream.get("splithttpSettings") or {}
-                qset(query, "path", xs.get("path"))
-                qset(query, "host", xs.get("host"))
-                qset(query, "mode", xs.get("mode"))
+                x = stream.get("xhttpSettings") or stream.get("splithttpSettings") or {}
+                qset(q, "path", x.get("path"))
+                qset(q, "host", x.get("host"))
+                qset(q, "mode", x.get("mode"))
             elif network == "ws":
-                ws = stream.get("wsSettings") or {}
-                qset(query, "path", ws.get("path"))
-                headers = ws.get("headers") or {}
-                qset(query, "host", headers.get("Host") or headers.get("host"))
-            name = base_name
-            if len(vnext) > 1 or len(users) > 1:
-                name += f" - {node_index}.{user_index}"
+                w = stream.get("wsSettings") or {}
+                qset(q, "path", w.get("path"))
+                headers = w.get("headers") or {}
+                qset(q, "host", headers.get("Host") or headers.get("host"))
             netloc = f"{urllib.parse.quote(uid, safe='')}@{address}:{int(port)}"
             result.append(urllib.parse.urlunsplit((
-                "vless", netloc, "", urllib.parse.urlencode(query, safe="/:,@"),
+                "vless", netloc, "", urllib.parse.urlencode(q, safe="/:,@"),
                 urllib.parse.quote(name, safe=""),
             )))
     return result
 
 
-def decode_xray_json(text: str) -> list[str]:
+def decode_xray_json(text):
     try:
         data = json.loads(text)
     except Exception:
@@ -272,147 +255,111 @@ def decode_xray_json(text: str) -> list[str]:
     result = []
     for outbound in outbounds:
         if isinstance(outbound, dict):
-            result.extend(json_outbound_to_vless(outbound))
+            result.extend(outbound_to_vless(outbound))
     return result
 
 
-def proxy_requests(source_url: str):
+def fetch_views(source_url):
     base = "https://happy-decoder.cc/p/"
-    yield "happy-json", base + "ua=happ,hwid=off,json/" + source_url, "json"
-    yield "happy-txt", base + "ua=happ,hwid=off,txt,name=remarks+idx/" + source_url, "text"
-    yield "happy-base64", base + "ua=happ,hwid=off,base64,name=remarks+idx/" + source_url, "text"
-    yield "happy-as-is", base + "ua=happ,hwid=off/" + source_url, "auto"
-    yield "direct", source_url, "text"
-
-
-def fetch_all_remote(source_url: str):
-    if not source_url.startswith("https://"):
-        raise ValueError("SOURCE_SUB_URL must use HTTPS")
-    results, errors = [], []
-    for adapter, url, mode in proxy_requests(source_url):
+    specs = [
+        ("happy-json", base + "ua=happ,hwid=off,json/" + source_url, "json", "Mozilla/5.0"),
+        ("happy-txt", base + "ua=happ,hwid=off,txt,name=remarks+idx/" + source_url, "text", "Mozilla/5.0"),
+        ("happy-as-is", base + "ua=happ,hwid=off/" + source_url, "auto", "Mozilla/5.0"),
+        ("direct", source_url, "text", "Happ/4.3.0"),
+    ]
+    results, errors = {}, []
+    for name, url, mode, ua in specs:
         try:
-            text = http_get(url, "Happ/4.3.0" if adapter == "direct" else "Mozilla/5.0")
+            text = http_get(url, ua)
             links = decode_xray_json(text) if mode == "json" else decode_subscription(text)
             if mode == "auto" and not links:
                 links = decode_xray_json(text)
             links = dedupe(links)
             if not links:
-                raise ValueError("response contains no VLESS profiles")
-            results.append((adapter, links))
+                raise ValueError("no VLESS profiles")
+            results[name] = links
         except urllib.error.HTTPError as exc:
-            errors.append(f"{adapter}:HTTP_{exc.code}")
+            errors.append(f"{name}:HTTP_{exc.code}")
         except urllib.error.URLError as exc:
-            errors.append(f"{adapter}:URL_{type(exc.reason).__name__}")
+            errors.append(f"{name}:URL_{type(exc.reason).__name__}")
         except Exception as exc:
-            errors.append(f"{adapter}:{type(exc).__name__}")
+            errors.append(f"{name}:{type(exc).__name__}")
     return results, errors
 
 
-def existing_output_links() -> list[str]:
-    if not OUTPUT.exists():
-        return []
+def existing_links():
     try:
-        return dedupe(decode_subscription(OUTPUT.read_text(encoding="ascii")))
+        return decode_subscription(OUTPUT.read_text(encoding="ascii")) if OUTPUT.exists() else []
     except Exception:
         return []
 
 
-def write_output(links: list[str]):
+def write_output(links):
     payload = ("\n".join(links) + "\n").encode("utf-8")
-    encoded = base64.b64encode(payload).decode("ascii") + "\n"
-    if not OUTPUT.exists() or OUTPUT.read_text(encoding="ascii") != encoded:
-        OUTPUT.write_text(encoded, encoding="ascii")
+    OUTPUT.write_text(base64.b64encode(payload).decode("ascii") + "\n", encoding="ascii")
 
 
 def main():
-    fallback = dedupe(decode_subscription(FALLBACK.read_text(encoding="utf-8")))
-    fallback = [x for x in fallback if is_usable_vless(x)]
+    fallback = [x for x in dedupe(decode_subscription(FALLBACK.read_text(encoding="utf-8"))) if is_usable_vless(x)]
     if not fallback:
         raise SystemExit("sources.txt has no usable fallback configs")
 
     source_url = os.environ.get("SOURCE_SUB_URL", "").strip()
-    remote_results, errors = (fetch_all_remote(source_url) if source_url else ([], ["source:missing-secret"]))
-    by_adapter = {adapter: links for adapter, links in remote_results}
+    views, errors = fetch_views(source_url) if source_url else ({}, ["source:missing-secret"])
 
-    name_source = by_adapter.get("happy-txt") or by_adapter.get("happy-base64") or []
-    name_mode, name_count = "none", 0
-    if by_adapter.get("happy-json") and name_source:
-        enriched, name_count, name_mode = preserve_human_names(by_adapter["happy-json"], name_source)
-        by_adapter["happy-json"] = enriched
+    names_matched = 0
+    if views.get("happy-json") and views.get("happy-txt"):
+        views["happy-json"], names_matched = attach_txt_names(views["happy-json"], views["happy-txt"])
 
-    adapter_stats = []
-    candidates = []
-    for adapter, raw_links in remote_results:
-        raw_links = by_adapter.get(adapter, raw_links)
-        usable, rejected, repaired = repair_and_filter_remote(raw_links, fallback)
-        adapter_stats.append({
-            "adapter": adapter, "raw": len(raw_links), "usable": len(usable),
-            "rejected": rejected, "repaired": repaired,
-        })
-        candidates.append((adapter, usable, len(raw_links), rejected, repaired))
+    stats, candidates = [], []
+    for adapter, links in views.items():
+        usable, rejected, repaired = repair_filter(links, fallback)
+        stats.append({"adapter": adapter, "raw": len(links), "usable": len(usable), "rejected": rejected, "repaired": repaired})
+        candidates.append((adapter, usable, len(links), rejected, repaired))
 
-    # Prefer the full JSON structure whenever it is complete. Other formats are
-    # diagnostics/fallbacks, not additional servers: merging them duplicates the
-    # same logical outbounds with slightly different serialization.
     json_candidate = next((x for x in candidates if x[0] == "happy-json"), None)
-    if json_candidate and json_candidate[1] and len(json_candidate[1]) == json_candidate[2]:
+    if json_candidate and len(json_candidate[1]) == json_candidate[2] and json_candidate[1]:
         primary = json_candidate
     elif candidates:
         primary = max(candidates, key=lambda x: (len(x[1]), -x[3], x[2]))
     else:
         primary = ("none", [], 0, 0, 0)
 
-    adapter, remote_usable, remote_count, rejected, repaired = primary
-    previous = existing_output_links()
-    remote_ok = bool(remote_usable)
-
-    if remote_ok:
-        pre_filter = remote_usable
-        write_output(pre_filter)
+    adapter, usable, raw_count, rejected, repaired = primary
+    previous = existing_links()
+    if usable:
+        final = usable
     elif previous and all(is_usable_vless(x) for x in previous):
-        pre_filter = previous
+        final = previous
     else:
-        pre_filter = fallback
-        write_output(pre_filter)
+        final = fallback
+    write_output(final)
 
     status = {
-        "remote_ok": remote_ok,
+        "remote_ok": bool(usable),
         "adapter": adapter,
-        "remote_count": remote_count,
-        "remote_usable_count": len(remote_usable),
+        "remote_count": raw_count,
+        "remote_usable_count": len(usable),
         "remote_rejected_count": rejected,
         "remote_repaired_count": repaired,
-        "name_source": name_mode,
-        "names_preserved": name_count,
-        "pre_filter_count": len(pre_filter),
-        "published_count": len(pre_filter),
+        "name_source": "endpoint-txt" if names_matched else "none",
+        "names_preserved": names_matched,
+        "pre_filter_count": len(final),
+        "published_count": len(final),
         "fallback_count": len(fallback),
-        "adapter_stats": adapter_stats,
+        "adapter_stats": stats,
         "errors": errors,
         "checked_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
     }
     STATUS.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-
     print(
-        f"REMOTE_OK={str(remote_ok).lower()} PRIMARY={adapter} "
-        f"REMOTE={remote_count} USABLE={len(remote_usable)} "
-        f"NAMES={name_count}/{name_mode} PRE_FILTER={len(pre_filter)}"
+        f"REMOTE_OK={str(bool(usable)).lower()} PRIMARY={adapter} REMOTE={raw_count} "
+        f"USABLE={len(usable)} NAMES_MATCHED={names_matched}"
     )
-    for stat in adapter_stats:
-        print(
-            f"ADAPTER {stat['adapter']}: raw={stat['raw']} usable={stat['usable']} "
-            f"rejected={stat['rejected']} repaired={stat['repaired']}"
-        )
+    for stat in stats:
+        print(f"ADAPTER {stat['adapter']}: raw={stat['raw']} usable={stat['usable']} rejected={stat['rejected']} repaired={stat['repaired']}")
     if errors:
         print("ADAPTER_ERRORS=" + ",".join(errors))
-
-    summary = os.environ.get("GITHUB_STEP_SUMMARY")
-    if summary:
-        with open(summary, "a", encoding="utf-8") as f:
-            f.write("### Subscription sync\n\n")
-            f.write(f"Authoritative source: **{adapter}**  \n")
-            f.write(f"Usable provider variants: **{len(remote_usable)}**  \n")
-            f.write(f"Provider names restored: **{name_count}** ({name_mode})  \n")
 
 
 if __name__ == "__main__":
