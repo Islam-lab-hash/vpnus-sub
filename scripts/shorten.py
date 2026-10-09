@@ -1,5 +1,5 @@
-import os
-import urllib.error
+import base64
+import binascii
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -8,39 +8,51 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "short-url.txt"
 TARGET = "https://raw.githubusercontent.com/Islam-lab-hash/vpnus-sub/main/sub.txt"
 API = "https://clck.ru/--"
+MAX_BYTES = 200_000
 
 
-class NoRedirect(urllib.request.HTTPRedirectHandler):
-    def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None
+def fetch_text(url: str) -> str:
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0", "Accept": "text/plain, */*"},
+    )
+    with urllib.request.urlopen(req, timeout=20) as response:
+        body = response.read(MAX_BYTES + 1)
+        if len(body) > MAX_BYTES:
+            raise ValueError("response too large")
+        return body.decode("utf-8-sig").strip()
 
 
-def resolve_once(url: str):
-    opener = urllib.request.build_opener(NoRedirect)
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+def is_subscription_payload(text: str) -> bool:
     try:
-        with opener.open(req, timeout=20) as response:
-            return response.getcode(), response.headers.get("Location")
-    except urllib.error.HTTPError as exc:
-        return exc.code, exc.headers.get("Location")
+        compact = "".join(text.split())
+        decoded = base64.b64decode(
+            compact + "=" * (-len(compact) % 4),
+            altchars=b"-_",
+            validate=True,
+        ).decode("utf-8")
+    except (binascii.Error, UnicodeError, ValueError):
+        return False
+    links = [line.strip() for line in decoded.splitlines() if line.strip().startswith("vless://")]
+    return 19 <= len(links) <= 22
 
 
 def is_valid_short(url: str) -> bool:
     if not url.startswith("https://clck.ru/"):
         return False
-    code, location = resolve_once(url)
-    if code not in (301, 302, 303, 307, 308) or not location:
+    try:
+        return is_subscription_payload(fetch_text(url))
+    except Exception:
         return False
-    return urllib.parse.urljoin(url, location) == TARGET
 
 
 def create_short() -> str:
     query = urllib.parse.urlencode({"url": TARGET})
-    req = urllib.request.Request(API + "?" + query, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=20) as response:
-        short = response.read(4096).decode("utf-8", "strict").strip()
+    short = fetch_text(API + "?" + query)
+    if not short.startswith("https://clck.ru/"):
+        raise RuntimeError(f"Unexpected clck.ru response: {short[:120]!r}")
     if not is_valid_short(short):
-        raise RuntimeError(f"clck.ru returned an invalid short link: {short[:80]!r}")
+        raise RuntimeError(f"Created clck.ru URL does not return a valid subscription: {short}")
     return short
 
 
