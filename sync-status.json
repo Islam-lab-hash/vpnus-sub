@@ -3,8 +3,10 @@
   "adapter": "happy-path",
   "remote_count": 45,
   "pre_filter_count": 45,
-  "published_count": 45,
+  "published_count": 20,
   "fallback_count": 19,
   "errors": [],
-  "checked_at_utc": "2026-10-09T16:21:46+00:00"
+  "checked_at_utc": "2026-10-09T16:22:18+00:00",
+  "distinct_families": 20,
+  "curated_at_utc": "2026-10-09T16:22:18+00:00"
 }
