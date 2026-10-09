@@ -6,6 +6,7 @@ on:
       - sources.txt
       - scripts/build.py
       - scripts/filter_top.py
+      - scripts/validate.py
       - scripts/publish_yandex.py
       - .github/workflows/build.yml
   schedule:
@@ -17,63 +18,95 @@ permissions:
 
 concurrency:
   group: vpnus-sub-build
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
         with:
           persist-credentials: true
+          fetch-depth: 0
+
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
       - name: Verify scripts
         run: |
+          set -euo pipefail
           python -m py_compile scripts/build.py
           python -m py_compile scripts/filter_top.py
+          python -m py_compile scripts/validate.py
           python -m py_compile scripts/publish_yandex.py
 
       - name: Synchronize source subscription
         env:
           SOURCE_SUB_URL: ${{ secrets.SOURCE_SUB_URL }}
-        run: python scripts/build.py
+        run: |
+          set -euo pipefail
+          python scripts/build.py
 
       - name: Keep top distinct locations and clean names
-        run: python scripts/filter_top.py
-
-      - name: Verify curated public subscription
         run: |
+          set -euo pipefail
+          python scripts/filter_top.py
+
+      - name: Validate final public subscription
+        run: |
+          set -euo pipefail
+          python scripts/validate.py
+
+      - name: Publish subscription and status to GitHub
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sub.txt sync-status.json selection-status.json
+
+          if git diff --cached --quiet; then
+            echo "GITHUB_PUBLISH_NO_CHANGES"
+            exit 0
+          fi
+
+          git commit -m "Sync curated subscription"
+
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              echo "GITHUB_PUBLISH_OK"
+              exit 0
+            fi
+            echo "Push attempt ${attempt} failed; retrying"
+            sleep $((attempt * 2))
+          done
+
+          echo "GitHub publish failed after 3 attempts" >&2
+          exit 1
+
+      - name: Require successful remote synchronization
+        run: |
+          set -euo pipefail
           python - <<'PY'
-          import base64
           import json
-          import urllib.parse
           from pathlib import Path
 
-          raw = Path('sub.txt').read_text(encoding='ascii').strip()
-          data = base64.b64decode(raw, validate=True).decode('utf-8')
-          links = [line.strip() for line in data.splitlines() if line.strip().startswith('vless://')]
-          assert 19 <= len(links) <= 22, f'Expected 19-22 curated configs, got {len(links)}'
-
-          keys = []
-          names = []
-          for uri in links:
-              p = urllib.parse.urlsplit(uri)
-              q = tuple(sorted(urllib.parse.parse_qsl(p.query, keep_blank_values=True)))
-              keys.append((p.username or '', (p.hostname or '').lower(), p.port, q))
-              names.append(urllib.parse.unquote(p.fragment or ''))
-
-          assert len(keys) == len(set(keys)), 'Technical duplicate VLESS configurations found'
-          assert len(names) == len(set(names)), 'Duplicate display names found'
+          status = json.loads(Path('sync-status.json').read_text(encoding='utf-8'))
+          if not status.get('remote_ok'):
+              raise SystemExit('Remote synchronization failed: ' + ', '.join(status.get('errors', [])))
 
           selection = json.loads(Path('selection-status.json').read_text(encoding='utf-8'))
-          assert selection['published_count'] == len(links)
-          print(f'CURATED_SUBSCRIPTION={len(links)} DISTINCT_FAMILIES={selection["families"]}')
+          print(
+              f"REMOTE_SYNC_OK adapter={status['adapter']} remote={status['remote_count']} "
+              f"curated={selection['published_count']} families={selection['families']}"
+          )
           PY
 
-      - name: Publish to Yandex Object Storage mirror
+      - name: Publish optional Yandex Object Storage mirror
+        continue-on-error: true
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.YC_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.YC_SECRET_ACCESS_KEY }}
@@ -81,35 +114,10 @@ jobs:
           YC_BUCKET: ${{ secrets.YC_BUCKET }}
           YC_OBJECT_KEY: s
         run: |
-          if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ] || [ -z "$YC_BUCKET" ]; then
-            echo "YANDEX_MIRROR_SKIPPED: add YC_ACCESS_KEY_ID, YC_SECRET_ACCESS_KEY and YC_BUCKET secrets"
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ] || [ -z "${YC_BUCKET:-}" ]; then
+            echo "YANDEX_MIRROR_DISABLED: YC_ACCESS_KEY_ID / YC_SECRET_ACCESS_KEY / YC_BUCKET are not configured"
             exit 0
           fi
           python -m pip install --disable-pip-version-check -q boto3
           python scripts/publish_yandex.py
-
-      - name: Publish subscription and status
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add sub.txt sync-status.json selection-status.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Sync curated subscription"
-            git pull --rebase origin main
-            git push origin main
-          fi
-
-      - name: Require successful remote synchronization
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          status = json.loads(Path('sync-status.json').read_text(encoding='utf-8'))
-          if not status.get('remote_ok'):
-              raise SystemExit('Remote synchronization failed: ' + ', '.join(status.get('errors', [])))
-          selection = json.loads(Path('selection-status.json').read_text(encoding='utf-8'))
-          print(
-              f"REMOTE_SYNC_OK adapter={status['adapter']} remote={status['remote_count']} "
-              f"curated={selection['published_count']} families={selection['families']}"
-          )
-          PY
