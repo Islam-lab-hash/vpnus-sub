@@ -9,6 +9,7 @@ SELECTION = ROOT / "selection-status.json"
 SYNC = ROOT / "sync-status.json"
 MIN_COUNT = 19
 MAX_COUNT = 22
+CRITICAL_REALITY = ("pbk", "sni", "sid", "fp")
 
 
 def canonical(uri: str):
@@ -47,6 +48,16 @@ def main():
             raise SystemExit(f"Entry {index} has invalid port") from exc
         if port is None or not 1 <= port <= 65535:
             raise SystemExit(f"Entry {index} has invalid port")
+
+        q = dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
+        if q.get("security", "").lower() == "reality":
+            missing = [k for k in CRITICAL_REALITY if not q.get(k)]
+            if missing:
+                raise SystemExit(
+                    f"Entry {index} has incomplete REALITY settings: missing {','.join(missing)}"
+                )
+            if q.get("type", "tcp").lower() == "tcp" and not q.get("flow"):
+                raise SystemExit(f"Entry {index} TCP REALITY profile has no flow")
 
         name = urllib.parse.unquote(p.fragment or "").strip()
         if not name:
