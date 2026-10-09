@@ -1,7 +1,13 @@
 """Synchronize the subscription source into sub.txt.
 
-The committed sub.txt is the last-known-good public payload. A failed remote
-refresh never replaces it. Curation/renaming is performed by filter_top.py.
+The remote provider currently returns some VLESS/REALITY entries without
+client-critical parameters (SNI/fingerprint/flow).  A syntactically importable
+URI is not necessarily usable, so this builder repairs entries only when the
+same endpoint exists in the known-good fallback and rejects incomplete REALITY
+entries instead of publishing them.
+
+The committed sub.txt remains the last-known-good public payload. Curation and
+renaming are performed by filter_top.py.
 """
 import base64
 import binascii
@@ -23,6 +29,7 @@ MAX_BYTES = 2_000_000
 HTTP_TIMEOUT = 25
 HTTP_ATTEMPTS = 3
 RETRYABLE_HTTP = {408, 425, 429, 500, 502, 503, 504}
+CRITICAL_REALITY = ("pbk", "sni", "sid", "fp")
 
 
 def decode_subscription(text: str) -> list[str]:
@@ -52,19 +59,33 @@ def decode_subscription(text: str) -> list[str]:
     return []
 
 
+def split_uri(uri: str):
+    p = urllib.parse.urlsplit(uri)
+    q = dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
+    return p, q
+
+
+def endpoint_key(uri: str):
+    p, _ = split_uri(uri)
+    return (
+        urllib.parse.unquote(p.username or ""),
+        (p.hostname or "").lower(),
+        p.port,
+    )
+
+
 def canonical_key(uri: str):
     """Technical identity of a VLESS config, ignoring only its display name."""
     try:
-        p = urllib.parse.urlsplit(uri)
+        p, q = split_uri(uri)
         if p.scheme.lower() != "vless" or not p.hostname:
             return ("raw", uri.split("#", 1)[0])
-        query = tuple(sorted(urllib.parse.parse_qsl(p.query, keep_blank_values=True)))
         return (
             p.scheme.lower(),
             urllib.parse.unquote(p.username or ""),
             (p.hostname or "").lower(),
             p.port,
-            query,
+            tuple(sorted(q.items())),
         )
     except Exception:
         return ("raw", uri.split("#", 1)[0])
@@ -80,6 +101,69 @@ def dedupe(links: list[str]) -> list[str]:
         seen.add(key)
         result.append(link)
     return result
+
+
+def is_usable_vless(uri: str) -> bool:
+    """Reject imported-looking but non-functional REALITY profiles."""
+    try:
+        p, q = split_uri(uri)
+        if p.scheme.lower() != "vless" or not p.username or not p.hostname or p.port is None:
+            return False
+        if not 1 <= p.port <= 65535:
+            return False
+        if q.get("security", "").lower() == "reality":
+            if any(not q.get(k) for k in CRITICAL_REALITY):
+                return False
+            # This provider's TCP REALITY endpoints use Vision. Publishing the
+            # stripped remote form without flow imports successfully but does not
+            # establish a working tunnel in standard clients.
+            if q.get("type", "tcp").lower() == "tcp" and not q.get("flow"):
+                return False
+        return True
+    except Exception:
+        return False
+
+
+def merge_missing_from_known_good(remote_uri: str, fallback_by_endpoint: dict) -> str:
+    """Repair only an exact UUID+host+port match; never guess another server's SNI."""
+    known = fallback_by_endpoint.get(endpoint_key(remote_uri))
+    if not known:
+        return remote_uri
+
+    rp, rq = split_uri(remote_uri)
+    _, kq = split_uri(known)
+    changed = False
+
+    # Fill fields that the remote adapter can strip. Existing remote values win.
+    for key in ("pbk", "sni", "sid", "fp", "flow", "security", "type", "encryption"):
+        if not rq.get(key) and kq.get(key):
+            rq[key] = kq[key]
+            changed = True
+
+    if not changed:
+        return remote_uri
+
+    query = urllib.parse.urlencode(rq, doseq=False, safe="/:,@")
+    rebuilt = urllib.parse.urlunsplit((rp.scheme, rp.netloc, rp.path, query, rp.fragment))
+    return rebuilt
+
+
+def repair_and_filter_remote(remote: list[str], fallback: list[str]):
+    fallback_by_endpoint = {endpoint_key(x): x for x in fallback}
+    repaired: list[str] = []
+    rejected: list[str] = []
+    repair_count = 0
+
+    for uri in remote:
+        fixed = merge_missing_from_known_good(uri, fallback_by_endpoint)
+        if fixed != uri:
+            repair_count += 1
+        if is_usable_vless(fixed):
+            repaired.append(fixed)
+        else:
+            rejected.append(uri)
+
+    return dedupe(repaired), len(rejected), repair_count
 
 
 def http_get(url: str, user_agent: str = "Mozilla/5.0") -> str:
@@ -109,14 +193,22 @@ def http_get(url: str, user_agent: str = "Mozilla/5.0") -> str:
 
 
 def proxy_urls(source_url: str):
-    # Preferred documented proxy form used by the current source.
+    # Happy Decoder documents /p/ as a subscription proxy. HWID remains disabled.
     yield (
-        "happy-path",
+        "happy-base64",
         "https://happy-decoder.cc/p/ua=happ,hwid=off,base64/" + source_url,
         "Mozilla/5.0",
     )
 
-    # Compatibility fallback for the same service.
+    # Plain-text conversion is a second documented output mode and occasionally
+    # preserves provider output differently from base64 conversion.
+    yield (
+        "happy-txt",
+        "https://happy-decoder.cc/p/ua=happ,hwid=off,txt/" + source_url,
+        "Mozilla/5.0",
+    )
+
+    # Compatibility query form, response as-is.
     query = urllib.parse.urlencode(
         {
             "u": source_url,
@@ -172,26 +264,31 @@ def write_output(links: list[str]):
 
 def main():
     fallback = dedupe(decode_subscription(FALLBACK.read_text(encoding="utf-8")))
+    fallback = [x for x in fallback if is_usable_vless(x)]
     if not fallback:
-        raise SystemExit("sources.txt has no valid VLESS fallback configs")
+        raise SystemExit("sources.txt has no usable VLESS fallback configs")
 
     source_url = os.environ.get("SOURCE_SUB_URL", "").strip()
-    remote: list[str] = []
+    remote_raw: list[str] = []
     adapter = "none"
     errors: list[str] = []
 
     if source_url:
-        remote, adapter, errors = fetch_remote(source_url)
+        remote_raw, adapter, errors = fetch_remote(source_url)
     else:
         errors.append("source:missing-secret")
 
+    usable_remote, rejected_remote, repaired_remote = repair_and_filter_remote(remote_raw, fallback)
     previous = existing_output_links()
-    remote_ok = bool(remote)
+    remote_ok = bool(remote_raw)
 
+    # Known-good local entries are always part of the candidate set. Remote entries
+    # may extend/refresh it, but an incomplete remote profile can no longer replace a
+    # working one.
     if remote_ok:
-        pre_filter = remote
+        pre_filter = dedupe(usable_remote + fallback)
         write_output(pre_filter)
-    elif previous:
+    elif previous and all(is_usable_vless(x) for x in previous):
         pre_filter = previous
     else:
         pre_filter = fallback
@@ -200,7 +297,10 @@ def main():
     status = {
         "remote_ok": remote_ok,
         "adapter": adapter,
-        "remote_count": len(remote),
+        "remote_count": len(remote_raw),
+        "remote_usable_count": len(usable_remote),
+        "remote_rejected_count": rejected_remote,
+        "remote_repaired_count": repaired_remote,
         "pre_filter_count": len(pre_filter),
         "published_count": len(pre_filter),
         "fallback_count": len(fallback),
@@ -214,7 +314,9 @@ def main():
 
     print(
         f"REMOTE_OK={str(remote_ok).lower()} ADAPTER={adapter} "
-        f"REMOTE={len(remote)} PRE_FILTER={len(pre_filter)} FALLBACK={len(fallback)}"
+        f"REMOTE={len(remote_raw)} USABLE={len(usable_remote)} "
+        f"REPAIRED={repaired_remote} REJECTED={rejected_remote} "
+        f"PRE_FILTER={len(pre_filter)} FALLBACK={len(fallback)}"
     )
     if errors:
         print("ADAPTER_ERRORS=" + ",".join(errors))
@@ -223,12 +325,12 @@ def main():
     if summary:
         with open(summary, "a", encoding="utf-8") as f:
             f.write("### Subscription sync\n\n")
-            f.write(f"Remote OK: **{remote_ok}**  \n")
+            f.write(f"Remote fetched: **{len(remote_raw)}**  \n")
+            f.write(f"Remote usable: **{len(usable_remote)}**  \n")
+            f.write(f"Remote repaired: **{repaired_remote}**  \n")
+            f.write(f"Remote rejected as incomplete: **{rejected_remote}**  \n")
+            f.write(f"Candidate pool: **{len(pre_filter)}**  \n")
             f.write(f"Adapter: **{adapter}**  \n")
-            f.write(
-                f"Remote: **{len(remote)}** | Pre-filter: **{len(pre_filter)}** "
-                f"| Fallback: **{len(fallback)}**  \n"
-            )
             if errors:
                 f.write("Adapters tried: `" + "`, `".join(errors) + "`\n")
 
