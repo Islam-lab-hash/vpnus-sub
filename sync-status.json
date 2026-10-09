@@ -1,0 +1,9 @@
+{
+  "remote_ok": true,
+  "adapter": "happy-path",
+  "remote_count": 45,
+  "published_count": 45,
+  "fallback_count": 19,
+  "errors": [],
+  "checked_at_utc": "2026-10-09T15:43:22+00:00"
+}
