@@ -9,6 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SUB = ROOT / "sub.txt"
 STATUS = ROOT / "selection-status.json"
 TARGET = 20
+MIN_TARGET = 19
+MAX_TARGET = 22
 
 PRIORITY = [
     "auto", "germany", "sweden", "finland", "estonia", "poland", "russia",
@@ -18,7 +20,7 @@ PRIORITY = [
 ]
 
 DISPLAY = {
-    "auto": "⚡ Самый быстрый АВТО",
+    "auto": "Самый Быстрый АВТО",
     "germany": "🇩🇪 Германия",
     "sweden": "🇸🇪 Швеция",
     "finland": "🇫🇮 Финляндия",
@@ -33,13 +35,13 @@ DISPLAY = {
     "france": "🇫🇷 Франция",
     "uk": "🇬🇧 Великобритания",
     "kazakhstan": "🇰🇿 Казахстан",
-    "reserve": "🛟 Резерв",
-    "lte1": "📶 LTE #1",
-    "lte2": "📶 LTE #2",
-    "lte3": "📶 LTE #3",
-    "lte4": "📶 LTE #4",
-    "lte5": "📶 LTE #5",
-    "tg": "🆓 TG + Сайт",
+    "reserve": "🇩🇪 Обход Резерв (только Wi-Fi)",
+    "lte1": "🇫🇮 LTE #1",
+    "lte2": "🇫🇮 LTE #2",
+    "lte3": "🇫🇮 LTE #3",
+    "lte4": "🇫🇮 LTE #4",
+    "lte5": "🇫🇮 LTE #5",
+    "tg": "[FREE] ТОЛЬКО TG БОТ + САЙТ",
 }
 
 KEYWORDS = [
@@ -80,6 +82,7 @@ def canonical(uri):
     return (p.username or "", (p.hostname or "").lower(), p.port, q)
 
 def score(uri):
+    """Heuristic profile quality, not a latency measurement."""
     p = urllib.parse.urlsplit(uri)
     q = dict(urllib.parse.parse_qsl(p.query, keep_blank_values=True))
     host = p.hostname or ""
@@ -141,46 +144,26 @@ def main():
     for vals in groups.values():
         vals.sort(key=score, reverse=True)
 
-    selected = []
-    used = defaultdict(int)
-
-    # First pass: one best endpoint per distinct location/family.
     ordered_families = [x for x in PRIORITY if x in groups]
     ordered_families += [x for x in groups if x not in ordered_families]
-    for fam in ordered_families:
-        if len(selected) >= TARGET:
-            break
-        if groups[fam]:
-            selected.append((fam, groups[fam][0]))
-            used[fam] = 1
 
-    # Second pass: add backups only for strongest/useful families until target is reached.
-    backup_priority = ["auto", "germany", "finland", "sweden", "netherlands", "russia", "reserve", "lte1", "lte2", "lte3"]
-    backup_priority += [x for x in ordered_families if x not in backup_priority]
-    round_no = 1
-    while len(selected) < min(TARGET, len(uniq)):
-        added = False
-        for fam in backup_priority:
-            idx = used[fam]
-            if idx < len(groups.get(fam, [])):
-                selected.append((fam, groups[fam][idx]))
-                used[fam] += 1
-                added = True
-                if len(selected) >= min(TARGET, len(uniq)):
-                    break
-        if not added:
-            break
-        round_no += 1
-        if round_no > 5:
-            break
+    # One best technical endpoint per location/family. This removes the provider's
+    # numbered copies such as Country - 1/-2/-3 while preserving genuinely distinct
+    # LTE/Reserve entries as separate families.
+    selected = [(fam, groups[fam][0]) for fam in ordered_families[:MAX_TARGET]]
 
-    counts = defaultdict(int)
+    if len(selected) > TARGET:
+        selected = selected[:TARGET]
+
+    # Safety: do not silently publish an undersized refresh. The workflow will fail
+    # before commit and the previous known-good public sub.txt remains in GitHub.
+    if len(selected) < MIN_TARGET:
+        raise SystemExit(f"Only {len(selected)} distinct location families found; need at least {MIN_TARGET}")
+
     output = []
     chosen = []
     for fam, uri in selected:
-        counts[fam] += 1
-        base_name = pretty_name(fam, original_name(uri))
-        name = base_name if counts[fam] == 1 else f"{base_name} • Резерв {counts[fam]-1}"
+        name = pretty_name(fam, original_name(uri))
         output.append(rename(uri, name))
         p = urllib.parse.urlsplit(uri)
         chosen.append({
