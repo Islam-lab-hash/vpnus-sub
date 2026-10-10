@@ -9,6 +9,7 @@ on:
       - scripts/validate.py
       - scripts/shorten.py
       - scripts/publish_yandex.py
+      - scripts/publish_vk.py
       - .github/workflows/build.yml
   schedule:
     - cron: '17 */6 * * *'
@@ -43,6 +44,7 @@ jobs:
           python -m py_compile scripts/validate.py
           python -m py_compile scripts/shorten.py
           python -m py_compile scripts/publish_yandex.py
+          python -m py_compile scripts/publish_vk.py
 
       - name: Synchronize source subscription
         env:
@@ -113,6 +115,24 @@ jobs:
               f"curated={selection['published_count']} families={selection['families']}"
           )
           PY
+
+      - name: Publish optional VK Cloud Object Storage mirror
+        continue-on-error: true
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.VK_S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.VK_S3_SECRET_ACCESS_KEY }}
+          VK_S3_BUCKET: ${{ secrets.VK_S3_BUCKET }}
+          VK_S3_ENDPOINT: https://hb.ru-msk.vkcs.cloud
+          VK_S3_REGION: ru-msk
+          VK_OBJECT_KEY: assets/cache/v3/6f29a1c4.dat
+        run: |
+          set -euo pipefail
+          if [ -z "${AWS_ACCESS_KEY_ID:-}" ] || [ -z "${AWS_SECRET_ACCESS_KEY:-}" ] || [ -z "${VK_S3_BUCKET:-}" ]; then
+            echo "VK_MIRROR_DISABLED: VK_S3_ACCESS_KEY_ID / VK_S3_SECRET_ACCESS_KEY / VK_S3_BUCKET are not configured"
+            exit 0
+          fi
+          python -m pip install --disable-pip-version-check -q boto3
+          python scripts/publish_vk.py
 
       - name: Publish optional Yandex Object Storage mirror
         continue-on-error: true
