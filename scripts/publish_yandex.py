@@ -5,11 +5,12 @@ import boto3
 
 ROOT = Path(__file__).resolve().parents[1]
 SUB = ROOT / "sub.txt"
+DEFAULT_OBJECT_KEY = "assets/cache/v3/6f29a1c4.dat"
 
 
 def main():
     bucket = os.environ["YC_BUCKET"].strip()
-    key = os.environ.get("YC_OBJECT_KEY", "s").strip() or "s"
+    key = os.environ.get("YC_OBJECT_KEY", DEFAULT_OBJECT_KEY).strip() or DEFAULT_OBJECT_KEY
     if not bucket:
         raise SystemExit("YC_BUCKET is empty")
 
@@ -28,7 +29,7 @@ def main():
         Key=key,
         Body=body,
         ACL="public-read",
-        ContentType="text/plain; charset=utf-8",
+        ContentType="application/octet-stream",
         CacheControl="no-cache, no-store, must-revalidate",
     )
     print(f"YANDEX_MIRROR_OK=https://{bucket}.storage.yandexcloud.net/{key}")
