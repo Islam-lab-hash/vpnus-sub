@@ -36,10 +36,10 @@
   "errors": [
     "direct:HTTP_307"
   ],
-  "checked_at_utc": "2026-10-10T05:53:11+00:00",
+  "checked_at_utc": "2026-10-10T12:32:22+00:00",
   "client_confirmed_technical": 26,
   "removed_unreachable_or_unconfirmed": 19,
   "distinct_families": 14,
   "health_source": "client-2026-10-09",
-  "curated_at_utc": "2026-10-10T05:53:12+00:00"
+  "curated_at_utc": "2026-10-10T12:32:22+00:00"
 }
