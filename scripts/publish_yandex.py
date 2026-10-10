@@ -28,7 +28,6 @@ def main():
         Bucket=bucket,
         Key=key,
         Body=body,
-        ACL="public-read",
         ContentType="application/octet-stream",
         CacheControl="no-cache, no-store, must-revalidate",
     )
