@@ -34,7 +34,7 @@ def is_subscription_payload(text: str) -> bool:
     except (binascii.Error, UnicodeError, ValueError):
         return False
     links = [line.strip() for line in decoded.splitlines() if line.strip().startswith("vless://")]
-    return 19 <= len(links) <= 22
+    return 1 <= len(links) <= 120
 
 
 def is_valid_short(url: str) -> bool:
