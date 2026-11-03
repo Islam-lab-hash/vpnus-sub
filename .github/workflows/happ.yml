@@ -1,0 +1,55 @@
+name: Build unified Happ profiles
+
+on:
+  push:
+    paths:
+      - 'sub.txt'
+      - 'Автоматический поиск'
+      - 'scripts/build_happ.py'
+      - '.github/workflows/happ.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: happ-unified-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate unified JSON subscription
+        run: python scripts/build_happ.py
+      - name: Validate unified subscription
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          profiles = json.loads(Path('happ.json').read_text(encoding='utf-8'))
+          assert len(profiles) > 1
+          assert profiles[0]['burstObservatory']['subjectSelector']
+          assert profiles[0]['routing']['balancers']
+          assert all(x.get('remarks') for x in profiles)
+          print('Validated', len(profiles), 'profiles')
+          PY
+      - name: Publish unified subscription
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add happ.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Update unified Happ subscription'
+          for i in 1 2 3; do
+            git pull --rebase origin main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep "$i"
+          done
+          exit 1
