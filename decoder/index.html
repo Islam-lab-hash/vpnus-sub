@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Бесплатный анализатор Happ и VPN-подписок">
+  <title>Happ Toolkit</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#"><span class="brand-mark">H</span><span>Happ Toolkit</span></a>
+      <nav><button class="nav active" data-view="decoder">Декодер</button><button class="nav" data-view="proxy">Прокси</button></nav>
+      <span class="status" id="status"><i></i> Готов</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <span class="eyebrow">OPEN SOURCE · БЕЗ РЕГИСТРАЦИИ</span>
+        <h1>Подписка — понятно<br><em>и без лишнего шума.</em></h1>
+        <p>Откройте прямую или Happ-ссылку, посмотрите серверы и получите нужный формат. Секретная ссылка не хранится в браузере.</p>
+      </section>
+
+      <section class="panel" id="decoderView">
+        <div class="panel-head"><div><span class="step">01</span><h2>Источник</h2></div><button class="ghost" id="loadPrivate">Моя подписка</button></div>
+        <label for="source">URL подписки или happ://add/…</label>
+        <textarea id="source" rows="4" spellcheck="false" placeholder="https://… или happ://add/https://…"></textarea>
+        <div class="grid two">
+          <label>Backend URL<input id="backend" type="url" placeholder="https://your-worker.workers.dev"></label>
+          <label>Формат<select id="format"><option value="json">JSON</option><option value="txt">TXT</option><option value="base64">Base64</option><option value="raw">Как есть</option></select></label>
+        </div>
+        <div class="actions"><button class="primary" id="analyze">Анализировать <span>→</span></button><button class="secondary" id="clear">Очистить</button></div>
+      </section>
+
+      <section class="panel hidden" id="proxyView">
+        <div class="panel-head"><div><span class="step">02</span><h2>Параметры клиента</h2></div></div>
+        <div class="grid two">
+          <label>User-Agent<select id="ua"><option>Happ/4.3.0</option><option>Happ/3.24.1</option><option>v2rayTun</option><option value="none">Без User-Agent</option></select></label>
+          <label>HWID<input id="hwid" placeholder="Автоматически"></label>
+          <label>ОС<select id="os"><option value="android">Android</option><option value="ios">iOS</option></select></label>
+          <label>Модель<input id="model" placeholder="Pixel 8"></label>
+        </div>
+        <button class="primary" id="buildLink">Собрать ссылку <span>→</span></button>
+        <label class="result-label">Готовая ссылка</label><div class="copybox"><code id="proxyLink">—</code><button id="copyLink">Копировать</button></div>
+      </section>
+
+      <section class="results hidden" id="results">
+        <div class="results-head"><div><span class="step">03</span><h2>Результат</h2></div><div><button class="ghost" id="download">Скачать</button><button class="ghost" id="copy">Копировать</button></div></div>
+        <div class="metrics"><div><b id="serverCount">0</b><span>серверов</span></div><div><b id="protocols">—</b><span>протоколы</span></div><div><b id="payloadSize">0 КБ</b><span>размер</span></div></div>
+        <div class="server-list" id="serverList"></div>
+        <details><summary>Исходный ответ</summary><pre id="rawOutput"></pre></details>
+      </section>
+    </main>
+    <footer><span>Happ Toolkit · open source</span><a href="https://github.com/Islam-lab-hash/vpnus-sub">GitHub ↗</a></footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

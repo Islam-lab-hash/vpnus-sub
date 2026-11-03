@@ -1,0 +1,6 @@
+name = "happ-toolkit"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Never put the subscription URL here. Configure it after deployment:
+# npx wrangler secret put SUBSCRIPTION_URL

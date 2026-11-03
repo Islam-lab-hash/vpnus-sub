@@ -8,6 +8,16 @@ Primary GitHub Raw URL:
 
 `https://raw.githubusercontent.com/Islam-lab-hash/vpnus-sub/main/sub.txt`
 
+## Happ Toolkit
+
+The repository also contains a free web interface for inspecting and converting
+subscriptions. The frontend lives in `decoder/` and is deployed to GitHub Pages;
+the optional private-subscription proxy lives in `worker/` and runs on the free
+Cloudflare Workers tier. Deployment instructions are in `decoder/README.md`.
+
+The private subscription URL is never committed to this public repository. It
+must be stored as the Worker secret `SUBSCRIPTION_URL`.
+
 The file contains a Base64-encoded list of curated VLESS links. The normal published set is 19-22 entries (currently targeted at 20 distinct location/family profiles).
 
 ## Pipeline
