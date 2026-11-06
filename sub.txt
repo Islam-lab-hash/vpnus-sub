@@ -1,57 +1,26 @@
 [
   {
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
-      }
-    ],
     "remarks": "⚡ Самый быстрый АВТО",
+    "log": {
+      "loglevel": "warning"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "udp": true
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http"
+      }
+    ],
     "outbounds": [
       {
         "tag": "proxy",
@@ -63,7 +32,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -78,17 +47,18 @@
             "serverName": "de.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -96,69 +66,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
-    "log": {
-      "loglevel": "warning"
-    },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
-    "inbounds": [
-      {
-        "listen": "127.0.0.1",
-        "port": 10808,
-        "protocol": "socks",
-        "settings": {
-          "auth": "noauth",
-          "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
-      },
-      {
-        "listen": "127.0.0.1",
-        "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
-      }
-    ],
     "remarks": "Германия 🇩🇪",
+    "log": {
+      "loglevel": "warning"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "udp": true
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http"
+      }
+    ],
     "outbounds": [
       {
         "tag": "proxy",
@@ -170,7 +105,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -185,17 +120,18 @@
             "serverName": "de.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -203,69 +139,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Нидерланды 🇳🇱",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Нидерланды 🇳🇱",
     "outbounds": [
       {
         "tag": "proxy",
@@ -277,7 +178,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -292,17 +193,18 @@
             "serverName": "nl.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -310,69 +212,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Франция 🇫🇷",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Франция 🇫🇷",
     "outbounds": [
       {
         "tag": "proxy",
@@ -384,7 +251,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -399,17 +266,18 @@
             "serverName": "fr.cdn-tech-images.com",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -417,69 +285,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Великобритания 🇬🇧",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Великобритания 🇬🇧",
     "outbounds": [
       {
         "tag": "proxy",
@@ -491,7 +324,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -506,17 +339,18 @@
             "serverName": "gb.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -524,69 +358,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Швеция 🇸🇪",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Швеция 🇸🇪",
     "outbounds": [
       {
         "tag": "proxy",
@@ -598,7 +397,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -613,17 +412,18 @@
             "serverName": "quick.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -631,69 +431,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Финляндия 🇫🇮",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Финляндия 🇫🇮",
     "outbounds": [
       {
         "tag": "proxy",
@@ -705,7 +470,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -720,17 +485,18 @@
             "serverName": "quick-fi.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -738,69 +504,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇪🇪 Эстония",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇪🇪 Эстония",
     "outbounds": [
       {
         "tag": "proxy",
@@ -812,7 +543,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -827,17 +558,18 @@
             "serverName": "cdn-ru.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -845,69 +577,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Латвия 🇱🇻",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Латвия 🇱🇻",
     "outbounds": [
       {
         "tag": "proxy",
@@ -919,7 +616,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -934,17 +631,18 @@
             "serverName": "la.cdn-tech-images.com",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -952,69 +650,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Литва 🇱🇹",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Литва 🇱🇹",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1026,7 +689,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1041,17 +704,18 @@
             "serverName": "test2.amberzone.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1059,69 +723,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇵🇱 Польша",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇵🇱 Польша",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1133,7 +762,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1148,17 +777,18 @@
             "serverName": "cdn-pl.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1166,69 +796,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Россия 🇷🇺",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Россия 🇷🇺",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1240,7 +835,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1255,17 +850,18 @@
             "serverName": "ru.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1273,69 +869,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Казахстан 🇰🇿",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Казахстан 🇰🇿",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1347,7 +908,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1362,17 +923,18 @@
             "serverName": "almaspb.com",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1380,69 +942,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "Турция 🇹🇷",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "Турция 🇹🇷",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1454,7 +981,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1469,17 +996,18 @@
             "serverName": "tr.cdn-tech-images.com",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1487,69 +1015,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "США 🇺🇸",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "США 🇺🇸",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1561,7 +1054,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1576,17 +1069,18 @@
             "serverName": "us.cdn-tech-images.com",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1594,69 +1088,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇩🇪 Обход Резерв (только Wi-Fi)",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇩🇪 Обход Резерв (только Wi-Fi)",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1668,7 +1127,7 @@
               "port": 9443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none"
                 }
               ]
@@ -1682,7 +1141,8 @@
             "serverName": "de-new.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           },
           "xhttpSettings": {
             "mode": "auto"
@@ -1690,12 +1150,12 @@
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1703,69 +1163,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇪🇪 Резервный",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇪🇪 Резервный",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1777,7 +1202,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none"
                 }
               ]
@@ -1791,21 +1216,21 @@
             "serverName": "new10.amberzone.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           },
           "grpcSettings": {
-            "serviceName": "ads.x5.ru",
-            "multiMode": false
+            "serviceName": "ads.x5.ru"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1813,69 +1238,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇫🇮 LTE #1",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇫🇮 LTE #1",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1887,7 +1277,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -1902,17 +1292,18 @@
             "serverName": "ads.x5.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -1920,69 +1311,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇫🇮 LTE #2",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇫🇮 LTE #2",
     "outbounds": [
       {
         "tag": "proxy",
@@ -1994,7 +1350,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none"
                 }
               ]
@@ -2008,21 +1364,21 @@
             "serverName": "gazeta-business.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           },
           "grpcSettings": {
-            "serviceName": "ads.x5.ru",
-            "multiMode": false
+            "serviceName": "ads.x5.ru"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -2030,69 +1386,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇫🇮 LTE #3",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇫🇮 LTE #3",
     "outbounds": [
       {
         "tag": "proxy",
@@ -2104,7 +1425,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none"
                 }
               ]
@@ -2118,21 +1439,21 @@
             "serverName": "gazeta-business.ru",
             "fingerprint": "firefox",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           },
           "grpcSettings": {
-            "serviceName": "ads.x5.ru",
-            "multiMode": false
+            "serviceName": "ads.x5.ru"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -2140,69 +1461,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇫🇮 LTE #4",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇫🇮 LTE #4",
     "outbounds": [
       {
         "tag": "proxy",
@@ -2214,7 +1500,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none"
                 }
               ]
@@ -2228,21 +1514,21 @@
             "serverName": "ads.x5.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           },
           "grpcSettings": {
-            "serviceName": "ads.x5.ru",
-            "multiMode": false
+            "serviceName": "ads.x5.ru"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -2250,69 +1536,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇫🇮 LTE #5",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇫🇮 LTE #5",
     "outbounds": [
       {
         "tag": "proxy",
@@ -2324,7 +1575,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "mlkem768x25519plus.native.0rtt.v-7SQRHD1uQ1dFudMkXoGqHrisnsnYjzICLWmc3l1iY.lvV9jnuFV8xkhxwDmGQOWHEHyepeTsN4YkHDWQTIN6I6uxkufqgnC-rEZICW6SgltNO2FjanZLepI4iosvaDl0teXhGnZEEJpWN0PWspNvtWCuRsQfA4MvnE_XcMabIcunASPtV2jhVXFsvNZTkM31hSLwFvSdGet3YShvJS7pmkddiAXmiyghiSCwvBpsB0uRIpFPgrx0mTtYe7gbG08hKoGveHq4lfDRUX-ImV3nqLmmKCU3GU7ZOSbhQs_ZwZ7UkEREXN2dESt8Qz4YFw3WifW3utOiF70xqO5TZ0EShHqNFms7elmzlhtEEkbfbAAvWbt3ab93pQSAgGYNsIiHgJc2F1CmgzWpA2p7uFSpqBpZE_HhxE4qA2gEFDT2lV8OyF4QtJ88PCkFqIGXEXn1SfHEGOESG6YIa31xI6pflx56EnizqlqEfDTHWTiCUQA1qjsShvhcq_FaJTthRXOmElOAcQc-e4NfK5vlkcroPIqIYnkccaXlsWw1Sa48pOc0U1N6GmMtB3WeoJtygap_elcISRPZq15Thj1eGP_0BRjfQe9RaYz6Qj8Sl2L2JrrvRElpYPq4qGNUvAHjBJBzWmzrU70tfPTLdyddE3OrAjOOJBYkhzVewlzsxBTWikZPsrrXhpk0QeuctIBHjJiHgLRxurlaN3t8ZRMhyi1PlQgPQX1ZtMqmaCDaRn8QFn1WlJgCoLIFZv_MMOvbJFcWx5OeSXsLxokEmoZtsYOWjDdggcqTtNgXpM1wuj7-eIq4xzjlccIeig43fK-7JLcQESVasA_EA-Kyx-jIkyl6FEoxhM5EJMEwt9-7wB6Hi6vTJRDVmJLQDHlxqTS3haAOcLZxI7ooCjuUmKh3Oyedx1HVHA0lBKl_YwdFMYApwWmHklSTQnHAItPUtTw7vNIEFBygStijW4Z6CpnuFGdlGkzdkiaLw-1Ea4MRO3tISScXAXGlmOLIhOlrSk04I5H1OApehNv1IS1PYkMzYSUJUCMGRk5XC7RVh32MhdSjKALDU2tcJjSHk2cGpKhPuBELFhvLpoYEl9A4C4OMnJkCKi22qMuikbA0kUrLBH50M1_6G_7rJFAgtLP-mU6JnOw4kVWUDE_Mly62Mr07ys1BUIl8edGzI8PYSzIpx_tvF6twF6QTUX65d2hSsezLQ3uIFtgfYgIKWZUuN7UqHG4_YPVZxLhAAlUwuEqYeh49ZjTbsMZDxSCiigMsWidpmIqjJkTdHD0iS2WpoDv0qUPZpIwoUNznU9iDRxPfQgSkuSONOiEiMq16K9yPy2z_CM-JFtnHJ6TpFKbjGZJ9dBPIFEapCOxeBgaANmA2nMfXdu1vRAy8ZbayYHSNhL1rBEC2N-5JZkfKQ7X9FEpKGk2-E2vwuNbxYc4jYeQtlUKNK7F7MTiFx2UXLMiqAU3fYsAXYxSgMG1RpzLthre-YngMTK5ioK4HEBHFYu39cp9KRnqbcGZfWvUdYzUmypQbYR4iQtH4U0YhXHnfV_cPkNowo70xOTluMFXTBQP9cRz0I0JVpD1z-0eXl-JU7ncW_9g3FSl9Fi5nxzklkhj4SGKwc"
                 }
               ]
@@ -2343,17 +1594,19 @@
           },
           "wsSettings": {
             "path": "/videos/k.mp4",
-            "host": "metrics.pc-club.app"
+            "headers": {
+              "Host": "metrics.pc-club.app"
+            }
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -2361,69 +1614,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "🇫🇮 LTE Reserve",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🇫🇮 LTE Reserve",
     "outbounds": [
       {
         "tag": "proxy",
@@ -2435,7 +1653,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "ed98b671-232b-444d-8683-5e3d5abb6101",
+                  "id": "20fe5d9c-c1f6-4430-b380-261b8223cf45",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -2450,17 +1668,18 @@
             "serverName": "ru-images.lizeg.ru",
             "fingerprint": "qq",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -2468,69 +1687,34 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
   },
   {
+    "remarks": "[FREE] ТОЛЬКО TG БОТ + САЙТ",
     "log": {
       "loglevel": "warning"
     },
-    "dns": {
-      "queryStrategy": "UseIP",
-      "servers": [
-        "1.1.1.1",
-        "1.0.0.1",
-        "8.8.8.8",
-        "8.8.4.4"
-      ]
-    },
     "inbounds": [
       {
+        "tag": "socks",
         "listen": "127.0.0.1",
         "port": 10808,
         "protocol": "socks",
         "settings": {
-          "auth": "noauth",
           "udp": true
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "socks"
+        }
       },
       {
+        "tag": "http",
         "listen": "127.0.0.1",
         "port": 10809,
-        "protocol": "http",
-        "settings": {
-          "allowTransparent": false
-        },
-        "sniffing": {
-          "destOverride": [
-            "http",
-            "tls",
-            "quic"
-          ],
-          "enabled": true,
-          "routeOnly": false
-        },
-        "tag": "http"
+        "protocol": "http"
       }
     ],
-    "remarks": "🆓 [FREE] ТОЛЬКО TG БОТ + САЙТ",
     "outbounds": [
       {
         "tag": "proxy",
@@ -2542,7 +1726,7 @@
               "port": 443,
               "users": [
                 {
-                  "id": "a9b2c455-cef4-4fcb-a9a1-c5510c0922bf",
+                  "id": "e4dbfc39-3127-44ca-970f-b87a5af559ba",
                   "encryption": "none",
                   "flow": "xtls-rprx-vision"
                 }
@@ -2557,17 +1741,18 @@
             "serverName": "ads.x5.ru",
             "fingerprint": "chrome",
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
-            "shortId": "50"
+            "shortId": "50",
+            "spiderX": "/"
           }
         }
       },
       {
-        "protocol": "freedom",
-        "tag": "direct"
+        "tag": "direct",
+        "protocol": "freedom"
       },
       {
-        "protocol": "blackhole",
-        "tag": "block"
+        "tag": "block",
+        "protocol": "blackhole"
       }
     ],
     "routing": {
@@ -2575,12 +1760,8 @@
       "rules": [
         {
           "type": "field",
-          "inboundTag": [
-            "socks",
-            "http"
-          ],
-          "network": "tcp,udp",
-          "outboundTag": "proxy"
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
         }
       ]
     }
