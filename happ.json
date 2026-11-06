@@ -1,6 +1,1056 @@
 [
   {
-    "remarks": "Р“РµСЂРјР°РЅРёСЏ рџ‡©рџ‡Є",
+    "burstObservatory": {
+      "pingConfig": {
+        "connectivity": "https://ya.ru/",
+        "destination": "https://ne.greatecloud.com/probe",
+        "httpMethod": "HEAD",
+        "interval": "2m",
+        "sampling": 3,
+        "timeout": "5000ms"
+      },
+      "subjectSelector": [
+        "germany",
+        "ne-vless-tls",
+        "ne-hysteria2",
+        "ne-wifi-2",
+        "de-wifi-3",
+        "ne-wifi-7",
+        "ne-wifi-8",
+        "ne-wifi-9",
+        "ne-wifi-10",
+        "ne-wifi-11",
+        "ne-wifi-12",
+        "ne-wifi-13",
+        "ne-wifi-14",
+        "ne-wifi-15"
+      ]
+    },
+    "inbounds": [
+      {
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "auth": "noauth",
+          "udp": true
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        },
+        "tag": "socks"
+      },
+      {
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http",
+        "settings": {
+          "allowTransparent": false
+        },
+        "sniffing": {
+          "destOverride": [
+            "http",
+            "tls",
+            "quic"
+          ],
+          "enabled": true,
+          "routeOnly": false
+        },
+        "tag": "http"
+      }
+    ],
+    "log": {
+      "loglevel": "none"
+    },
+    "meta": null,
+    "outbounds": [
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "ne.greatecloud.com",
+              "port": 443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tcpSettings": {},
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "enableSessionResumption": false,
+            "fingerprint": "firefox",
+            "serverName": "ne.greatecloud.com"
+          }
+        },
+        "tag": "proxy"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "deb.greatecloud.com",
+              "port": 443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "deb.greatecloud.com"
+          }
+        },
+        "tag": "germany"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "ne.greatecloud.com",
+              "port": 443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "raw",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne.greatecloud.com"
+          }
+        },
+        "tag": "ne-vless-tls"
+      },
+      {
+        "protocol": "hysteria",
+        "settings": {
+          "address": "ne.greatecloud.com",
+          "port": 443,
+          "version": 2
+        },
+        "streamSettings": {
+          "finalmask": {
+            "quicParams": {
+              "bbrProfile": "standard",
+              "congestion": "bbr",
+              "disablePathMTUDiscovery": false,
+              "initConnectionReceiveWindow": 5242880,
+              "initStreamReceiveWindow": 2097152,
+              "maxConnectionReceiveWindow": 10485760,
+              "maxIdleTimeout": 30,
+              "maxStreamReceiveWindow": 4194304
+            }
+          },
+          "hysteriaSettings": {
+            "auth": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b",
+            "udpIdleTimeout": 90,
+            "version": 2
+          },
+          "network": "hysteria",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h3"
+            ],
+            "serverName": "ne.greatecloud.com"
+          }
+        },
+        "tag": "ne-hysteria2"
+      },
+      {
+        "mux": {
+          "concurrency": -1,
+          "enabled": true,
+          "xudpConcurrency": 16,
+          "xudpProxyUDP443": "allow"
+        },
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "kot-game.club",
+              "port": 4443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-2"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "cloud.kot-game.club",
+              "port": 7443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "clne-edge.cloud.kot-game.club"
+          }
+        },
+        "tag": "de-wifi-3"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "1exhc.guardora.pro",
+              "port": 18414,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-7"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "ne-3.greatecloud.com",
+              "port": 7443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "clne-edge.cloud.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-8"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "mirror.kot-game.club",
+              "port": 9444,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-9"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "seltos.kot-game.club",
+              "port": 5443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "seltos.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-10"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "thirtyone.kot-game.club",
+              "port": 4443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-11"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "fsix.kot-game.club",
+              "port": 4443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-12"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "vo.kot-game.club",
+              "port": 4443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-13"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "svp.kot-game.club",
+              "port": 4443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge10.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-14"
+      },
+      {
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
+            {
+              "address": "veight.kot-game.club",
+              "port": 443,
+              "users": [
+                {
+                  "encryption": "none",
+                  "flow": "xtls-rprx-vision",
+                  "id": "aa73bd9e-cb2b-42e8-83af-d8fadb0f0a3b"
+                }
+              ]
+            }
+          ]
+        },
+        "streamSettings": {
+          "network": "tcp",
+          "security": "tls",
+          "tlsSettings": {
+            "alpn": [
+              "h2",
+              "http/1.1"
+            ],
+            "fingerprint": "firefox",
+            "serverName": "ne-edge20.kot-game.club"
+          }
+        },
+        "tag": "ne-wifi-15"
+      },
+      {
+        "protocol": "freedom",
+        "streamSettings": {
+          "sockopt": {
+            "domainStrategy": "ForceIPv4"
+          }
+        },
+        "tag": "direct"
+      },
+      {
+        "protocol": "blackhole",
+        "settings": {
+          "response": {
+            "type": "http"
+          }
+        },
+        "tag": "block"
+      },
+      {
+        "protocol": "dns",
+        "tag": "dns-out"
+      }
+    ],
+    "remarks": "🇪🇺 Автоматический поиск. ⚡️",
+    "routing": {
+      "balancers": [
+        {
+          "fallbackTag": "ne-vless-tls",
+          "selector": [
+            "germany",
+            "ne-vless-tls",
+            "ne-hysteria2",
+            "ne-wifi-2",
+            "de-wifi-3",
+            "ne-wifi-7",
+            "ne-wifi-8",
+            "ne-wifi-9",
+            "ne-wifi-10",
+            "ne-wifi-11",
+            "ne-wifi-12",
+            "ne-wifi-13",
+            "ne-wifi-14",
+            "ne-wifi-15"
+          ],
+          "strategy": {
+            "settings": {
+              "baselines": [
+                "500ms",
+                "1s"
+              ],
+              "costs": [
+                {
+                  "match": "germany",
+                  "regexp": false,
+                  "value": 100
+                },
+                {
+                  "match": "ne-vless-tls",
+                  "regexp": false,
+                  "value": 100
+                },
+                {
+                  "match": "ne-hysteria2",
+                  "regexp": false,
+                  "value": 100
+                },
+                {
+                  "match": "ne-wifi-2",
+                  "regexp": false,
+                  "value": 10000
+                },
+                {
+                  "match": "de-wifi-3",
+                  "regexp": false,
+                  "value": 10000
+                },
+                {
+                  "match": "ne-wifi-7",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-8",
+                  "regexp": false,
+                  "value": 10000
+                },
+                {
+                  "match": "ne-wifi-9",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-10",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-11",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-12",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-13",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-14",
+                  "regexp": false,
+                  "value": 100000
+                },
+                {
+                  "match": "ne-wifi-15",
+                  "regexp": false,
+                  "value": 100000
+                }
+              ],
+              "expected": 1,
+              "maxRTT": "2s"
+            },
+            "type": "leastLoad"
+          },
+          "tag": "auto-balancer"
+        }
+      ],
+      "domainMatcher": "hybrid",
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "domain": [
+            "domain:greatecloud.com",
+            "domain:kot-game.club",
+            "domain:guardora.pro"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "outboundTag": "direct",
+          "protocol": [
+            "bittorrent"
+          ],
+          "type": "field"
+        },
+        {
+          "domain": [
+            "domain:mtalk.google.com",
+            "domain:push.apple.com",
+            "domain:push-apple.com.akadns.net"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "ip": [
+            "17.0.0.0/8"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "ip": [
+            "geoip:private"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "domain": [
+            "domain:su",
+            "domain:by",
+            "domain:xn--p1ai",
+            "domain:yandex.aero",
+            "domain:yandex.az",
+            "domain:yandex.by",
+            "domain:yandex.cloud",
+            "domain:yandex.co.il",
+            "domain:yandex.com",
+            "domain:yandex.com.am",
+            "domain:yandex.com.ge",
+            "domain:yandex.com.ru",
+            "domain:yandex.com.tr",
+            "domain:yandex.com.ua",
+            "domain:yandex.de",
+            "domain:yandex.ee",
+            "domain:yandex.eu",
+            "domain:yandex.fi",
+            "domain:yandex.fr",
+            "domain:yandex.jobs",
+            "domain:yandex.kg",
+            "domain:yandex.kz",
+            "domain:yandex.lt",
+            "domain:yandex.lv",
+            "domain:yandex.md",
+            "domain:yandex.net",
+            "domain:yandex.org",
+            "domain:yandex.pl",
+            "domain:yandex.ru",
+            "domain:yandex.st",
+            "domain:yandex.sx",
+            "domain:yandex.tj",
+            "domain:yandex.tm",
+            "domain:yandex.tr",
+            "domain:yandex.ua",
+            "domain:yandex.uz",
+            "domain:2gis.ae",
+            "domain:2gis.am",
+            "domain:2gis.az",
+            "domain:2gis.by",
+            "domain:2gis.com",
+            "domain:2gis.com.cy",
+            "domain:2gis.cz",
+            "domain:2gis.ge",
+            "domain:2gis.kg",
+            "domain:2gis.kz",
+            "domain:2gis.ru",
+            "domain:2gis.tj",
+            "domain:2gis.ua",
+            "domain:2gis.uz",
+            "domain:avito.ru",
+            "domain:avito.st",
+            "domain:ok.ru",
+            "domain:okcdn.ru",
+            "domain:mycdn.me",
+            "full:st-ok-pts.cdn-vk.ru",
+            "full:st-ok.cdn-vk.ru",
+            "domain:ozon.by",
+            "domain:ozon.com",
+            "domain:ozon.com.by",
+            "domain:ozon.com.kz",
+            "domain:ozon.kz",
+            "domain:ozon.ru",
+            "domain:ozon.tm",
+            "domain:ozone.ru",
+            "domain:ozonru.me",
+            "domain:ozonusercontent.com",
+            "domain:geobasket.ru",
+            "domain:paywb.com",
+            "domain:rwb.ru",
+            "domain:wb-basket.ru",
+            "domain:wb.ru",
+            "domain:wbbasket.ru",
+            "domain:wbpay.ru",
+            "domain:wibes.ru",
+            "domain:wildberries.ru",
+            "domain:vtb.ru",
+            "domain:gosuslugi.ru",
+            "domain:kinopoisk.ru",
+            "domain:tele2.ru",
+            "domain:rutube.ru",
+            "full:api.expf.ru",
+            "full:api.mindbox.ru",
+            "regexp:^(.+\\.)?alfa.*\\.ru$",
+            "regexp:^(.+\\.)?mts.*\\.ru$",
+            "regexp:^(.+\\.)?dzen.*\\.ru$",
+            "regexp:^(.+\\.)?x5.*\\.ru$",
+            "regexp:^alfa(-?[a-z]+)?\\.(com|biz|st)$",
+            "regexp:^vtb(-?[a-z0-9]+)?\\.(ru|com|in|digital|site|bank\\.in|fut\\.ru|corp\\.ru|promo)$",
+            "domain:stbid.ru",
+            "domain:1c-bitrix.ru",
+            "domain:1c.ru",
+            "domain:1cfresh.com",
+            "domain:1cloud.ru",
+            "domain:1internet.tv",
+            "domain:300.ya.ru",
+            "domain:47news.ru",
+            "domain:4meeting.me",
+            "domain:5ka.ru",
+            "domain:5post.market",
+            "domain:8ofpsm7zqu.a.trbcdn.net",
+            "domain:a.auth-nsdi.ru",
+            "domain:a.res-nsdi.ru",
+            "domain:abr.ru",
+            "domain:aclub.ru",
+            "domain:adriver.ru",
+            "domain:gov.ru",
+            "domain:aeroflot.ru",
+            "domain:alformacap.com",
+            "domain:alformacapital.com",
+            "domain:ams2-cdn.2gis.com",
+            "domain:auth-nsdi.ru",
+            "domain:auto.ru",
+            "domain:av.ru",
+            "domain:b.auth-nsdi.ru",
+            "domain:b.res-nsdi.ru",
+            "domain:baltbank.ru",
+            "domain:banka-ui.dev",
+            "domain:banki.ru",
+            "domain:bankline.ru",
+            "domain:flocktory.com",
+            "domain:beta-bank.com",
+            "domain:bitrix24.ru",
+            "domain:boosty.to",
+            "domain:max.ru",
+            "domain:bronevik.com",
+            "domain:mail.ru",
+            "domain:cdn-tinkoff.ru",
+            "domain:lemanapro.ru",
+            "domain:oversecure.org",
+            "domain:uxfeedback.ru",
+            "domain:serverstats.ru",
+            "domain:cdnsix.vk-com.ru",
+            "domain:speedstream.ru",
+            "domain:chizhik.club",
+            "domain:citydrive.ru",
+            "domain:clstorage.net",
+            "domain:mts.ru",
+            "domain:rzd.ru",
+            "domain:yadro.ru",
+            "domain:credistory.ru",
+            "domain:csat.ru",
+            "domain:cscampus.ru",
+            "domain:d-assets.2gis.ru",
+            "domain:d5de4k0ri8jba7ucdbt6.apigw.yandexcloud.net",
+            "domain:dbo-dengi.online",
+            "domain:dellin.ru",
+            "domain:disk.2gis.com",
+            "domain:dixy.ru",
+            "domain:dnevnik.ru",
+            "domain:dns-shop.ru",
+            "domain:dodopizza.ru",
+            "domain:dom.ru",
+            "domain:domclick.ru",
+            "domain:donationalerts.com",
+            "domain:drweb.ru",
+            "domain:e5.ru",
+            "domain:edadeal.io",
+            "domain:edadeal.ru",
+            "domain:vk.com",
+            "domain:targetads.io",
+            "domain:fastvps.ru",
+            "domain:fb-cdn.premier.one",
+            "domain:finuslugi.ru",
+            "domain:fivepost.ru",
+            "domain:fix-price.com",
+            "domain:gazeta.ru",
+            "domain:gazprombank.tech",
+            "domain:gazprompay.ru",
+            "domain:get4click.ru",
+            "domain:gorodpay.ru",
+            "domain:gpb.ru",
+            "domain:gpbmobile.ru",
+            "domain:gpmdi.ru",
+            "domain:hh.ru",
+            "domain:idx5.ru",
+            "domain:imgsmail.ru",
+            "domain:investalfabank.com",
+            "domain:iz.ru",
+            "domain:jivo.ru",
+            "domain:jivochat.com",
+            "domain:jivosite.com",
+            "domain:jsons.injector.3ebra.net",
+            "domain:jua5fcnytm.a.trbcdn.net",
+            "domain:jx5.ru",
+            "domain:kaspersky.com",
+            "domain:kaspersky.ru",
+            "domain:kazanexpress.ru",
+            "domain:kommersant.ru",
+            "domain:kp.ru",
+            "domain:krasyar.ru",
+            "domain:krd.ru",
+            "domain:kuper.ru",
+            "domain:lenta.com",
+            "domain:lenta.ru",
+            "domain:lmru.tech",
+            "domain:magnit-ru.injector.3ebra.net",
+            "domain:magnit.ru",
+            "domain:tinkoff.ru",
+            "domain:megafon.ru",
+            "domain:megamarket.ru",
+            "domain:megamarket.tech",
+            "domain:memealerts.com",
+            "domain:alfabank.ru",
+            "domain:mirpayonline.ru",
+            "domain:miya-news.online",
+            "domain:mm.ru",
+            "domain:mnogolososya.ru",
+            "domain:moex.com",
+            "domain:mtscdn.ru",
+            "domain:mtsdengi.ru",
+            "domain:myapelsin.ru",
+            "domain:mymts.ru",
+            "domain:netmonet.co",
+            "domain:nspk.ru",
+            "domain:okko.sport",
+            "domain:okko.tv",
+            "domain:okolo.app",
+            "domain:oneme.ru",
+            "domain:perekrestok.ru",
+            "domain:rutubelist.ru",
+            "domain:pochta.ru",
+            "domain:userapi.com",
+            "domain:psbank.ru",
+            "domain:psblog.ru",
+            "domain:adhigh.net",
+            "domain:qms.ru",
+            "domain:rambler.ru",
+            "domain:skcrtxr.com",
+            "domain:rbc.ru",
+            "domain:receive-sentry.lmru.tech",
+            "domain:res-nsdi.ru",
+            "domain:rostelecom.ru",
+            "domain:rshb.ru",
+            "domain:rt.ru",
+            "domain:rtbcdn.ru",
+            "domain:russiacalling.com",
+            "domain:rustore.ru",
+            "domain:rzd-bonus.ru",
+            "domain:s3.yandex.net",
+            "domain:sbermarket.ru",
+            "domain:sbermegamarket.ru",
+            "domain:sbermobile.ru",
+            "domain:sbpgpb.ru",
+            "domain:servicepipe.ru",
+            "domain:sistema-capital.com",
+            "domain:spvb.ru",
+            "domain:statad.ru",
+            "domain:beeline.ru",
+            "domain:stats.vk-portal.net",
+            "domain:svoy.academy",
+            "domain:tamtam.chat",
+            "domain:taximaxim.ru",
+            "domain:taxsee.com",
+            "domain:tbank-online.com",
+            "domain:timeweb.cloud",
+            "domain:timeweb.com",
+            "domain:tips.tips",
+            "domain:tns-counter.ru",
+            "domain:tnt-online.ru",
+            "domain:tochka-tech.com",
+            "domain:tochka.com",
+            "domain:topdelivery.ru",
+            "domain:yastatic.net",
+            "domain:trbcdn.net",
+            "domain:tsx.x5static.net",
+            "domain:tu-tu.ru",
+            "domain:tutu.ru",
+            "domain:usedesk.ru",
+            "domain:vgtrk.ru",
+            "domain:victoria-group.ru",
+            "domain:volnamobile.ru",
+            "domain:wcm.weborama-tech.ru",
+            "domain:web-static.mindbox.ru",
+            "domain:whoosh.bike",
+            "domain:cbonds.ru",
+            "domain:windsurf.com",
+            "domain:wink.ru",
+            "domain:vulpine.email",
+            "domain:cikrf.ru",
+            "domain:magnit.com",
+            "domain:x5.ru",
+            "domain:x5.tech",
+            "domain:yota.ru",
+            "domain:youla-web-static.mrgcdn.ru",
+            "domain:youla.io",
+            "domain:youla.ru",
+            "domain:zentotem.net",
+            "domain:xn--90aifd0aza.site",
+            "domain:government.ru",
+            "domain:kremlin.ru",
+            "domain:sber.ru",
+            "domain:tbank.ru",
+            "domain:ivi.ru",
+            "domain:gu-st.ru",
+            "domain:nsdi.ru",
+            "domain:vk-portal.net",
+            "domain:vk.ru",
+            "domain:t2.ru"
+          ],
+          "outboundTag": "direct",
+          "type": "field"
+        },
+        {
+          "balancerTag": "auto-balancer",
+          "inboundTag": [
+            "dns-in"
+          ],
+          "type": "field"
+        },
+        {
+          "outboundTag": "dns-out",
+          "port": "53",
+          "type": "field"
+        },
+        {
+          "network": "udp",
+          "outboundTag": "block",
+          "port": "443",
+          "type": "field"
+        },
+        {
+          "balancerTag": "auto-balancer",
+          "network": "tcp,udp",
+          "type": "field"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "Германия 🇩🇪",
     "log": {
       "loglevel": "warning"
     },
@@ -73,7 +1123,7 @@
     }
   },
   {
-    "remarks": "РЁРІРµС†РёСЏ рџ‡ёрџ‡Є",
+    "remarks": "Швеция 🇸🇪",
     "log": {
       "loglevel": "warning"
     },
@@ -146,7 +1196,7 @@
     }
   },
   {
-    "remarks": "Р¤РёРЅР»СЏРЅРґРёСЏ рџ‡«рџ‡®",
+    "remarks": "Финляндия 🇫🇮",
     "log": {
       "loglevel": "warning"
     },
@@ -219,7 +1269,7 @@
     }
   },
   {
-    "remarks": "рџ‡Єрџ‡Є Р­СЃС‚РѕРЅРёСЏ",
+    "remarks": "🇪🇪 Эстония",
     "log": {
       "loglevel": "warning"
     },
@@ -292,7 +1342,7 @@
     }
   },
   {
-    "remarks": "рџ‡µрџ‡± РџРѕР»СЊС€Р°",
+    "remarks": "🇵🇱 Польша",
     "log": {
       "loglevel": "warning"
     },
@@ -365,7 +1415,7 @@
     }
   },
   {
-    "remarks": "Р РѕСЃСЃРёСЏ рџ‡·рџ‡є",
+    "remarks": "Россия 🇷🇺",
     "log": {
       "loglevel": "warning"
     },
@@ -438,7 +1488,7 @@
     }
   },
   {
-    "remarks": "Р›РёС‚РІР° рџ‡±рџ‡№",
+    "remarks": "Литва 🇱🇹",
     "log": {
       "loglevel": "warning"
     },
@@ -511,7 +1561,7 @@
     }
   },
   {
-    "remarks": "Р›Р°С‚РІРёСЏ рџ‡±рџ‡»",
+    "remarks": "Латвия 🇱🇻",
     "log": {
       "loglevel": "warning"
     },
@@ -584,7 +1634,7 @@
     }
   },
   {
-    "remarks": "рџ‡©рџ‡Є РћР±С…РѕРґ Р РµР·РµСЂРІ (С‚РѕР»СЊРєРѕ Wi-Fi)",
+    "remarks": "🇩🇪 Обход Резерв (только Wi-Fi)",
     "log": {
       "loglevel": "warning"
     },
@@ -632,9 +1682,6 @@
             "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
             "shortId": "50",
             "spiderX": "/"
-          },
-          "xhttpSettings": {
-            "mode": "auto"
           }
         }
       },
@@ -659,7 +1706,7 @@
     }
   },
   {
-    "remarks": "РќРёРґРµСЂР»Р°РЅРґС‹ рџ‡ірџ‡±",
+    "remarks": "Нидерланды 🇳🇱",
     "log": {
       "loglevel": "warning"
     },
@@ -732,7 +1779,7 @@
     }
   },
   {
-    "remarks": "РўСѓСЂС†РёСЏ рџ‡№рџ‡·",
+    "remarks": "Турция 🇹🇷",
     "log": {
       "loglevel": "warning"
     },
@@ -805,7 +1852,7 @@
     }
   },
   {
-    "remarks": "РЎРЁРђ рџ‡єрџ‡ё",
+    "remarks": "США 🇺🇸",
     "log": {
       "loglevel": "warning"
     },
@@ -849,7 +1896,62 @@
           "network": "tcp",
           "security": "reality",
           "realitySettings": {
-            "serverName": "us.cdn-tech-images.com",…288 tokens truncated… "vnext": [
+            "serverName": "us.cdn-tech-images.com",
+            "fingerprint": "qq",
+            "publicKey": "-tePObR3oZwGAUOb5kqTYkNWl6rtUKl0RFuzuu06wgw",
+            "shortId": "50",
+            "spiderX": "/"
+          }
+        }
+      },
+      {
+        "tag": "direct",
+        "protocol": "freedom"
+      },
+      {
+        "tag": "block",
+        "protocol": "blackhole"
+      }
+    ],
+    "routing": {
+      "domainStrategy": "AsIs",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "proxy",
+          "network": "tcp,udp"
+        }
+      ]
+    }
+  },
+  {
+    "remarks": "Франция 🇫🇷",
+    "log": {
+      "loglevel": "warning"
+    },
+    "inbounds": [
+      {
+        "tag": "socks",
+        "listen": "127.0.0.1",
+        "port": 10808,
+        "protocol": "socks",
+        "settings": {
+          "udp": true
+        }
+      },
+      {
+        "tag": "http",
+        "listen": "127.0.0.1",
+        "port": 10809,
+        "protocol": "http"
+      }
+    ],
+    "outbounds": [
+      {
+        "tag": "proxy",
+        "protocol": "vless",
+        "settings": {
+          "vnext": [
             {
               "address": "test.gold-pond.test-cdn-kkk.com",
               "port": 443,
@@ -896,7 +1998,7 @@
     }
   },
   {
-    "remarks": "Р’РµР»РёРєРѕР±СЂРёС‚Р°РЅРёСЏ рџ‡¬рџ‡§",
+    "remarks": "Великобритания 🇬🇧",
     "log": {
       "loglevel": "warning"
     },
@@ -969,7 +2071,7 @@
     }
   },
   {
-    "remarks": "РљР°Р·Р°С…СЃС‚Р°РЅ рџ‡°рџ‡ї",
+    "remarks": "Казахстан 🇰🇿",
     "log": {
       "loglevel": "warning"
     },
@@ -1042,7 +2144,7 @@
     }
   },
   {
-    "remarks": "рџ‡Єрџ‡Є Р РµР·РµСЂРІРЅС‹Р№",
+    "remarks": "🇪🇪 Резервный",
     "log": {
       "loglevel": "warning"
     },
@@ -1117,7 +2219,7 @@
     }
   },
   {
-    "remarks": "рџ‡«рџ‡® LTE #1",
+    "remarks": "🇫🇮 LTE #1",
     "log": {
       "loglevel": "warning"
     },
@@ -1190,7 +2292,7 @@
     }
   },
   {
-    "remarks": "рџ‡«рџ‡® LTE #2",
+    "remarks": "🇫🇮 LTE #2",
     "log": {
       "loglevel": "warning"
     },
@@ -1265,7 +2367,7 @@
     }
   },
   {
-    "remarks": "рџ‡«рџ‡® LTE #3",
+    "remarks": "🇫🇮 LTE #3",
     "log": {
       "loglevel": "warning"
     },
@@ -1340,7 +2442,7 @@
     }
   },
   {
-    "remarks": "рџ‡«рџ‡® LTE Reserve",
+    "remarks": "🇫🇮 LTE Reserve",
     "log": {
       "loglevel": "warning"
     },
@@ -1413,7 +2515,7 @@
     }
   },
   {
-    "remarks": "рџ‡«рџ‡® LTE #4",
+    "remarks": "🇫🇮 LTE #4",
     "log": {
       "loglevel": "warning"
     },
@@ -1488,7 +2590,7 @@
     }
   },
   {
-    "remarks": "рџ‡«рџ‡® LTE #5",
+    "remarks": "🇫🇮 LTE #5",
     "log": {
       "loglevel": "warning"
     },
@@ -1566,7 +2668,7 @@
     }
   },
   {
-    "remarks": "рџ†“ [FREE] РўРћР›Р¬РљРћ TG Р‘РћРў + РЎРђР™Рў",
+    "remarks": "🆓 [FREE] ТОЛЬКО TG БОТ + САЙТ",
     "log": {
       "loglevel": "warning"
     },
@@ -1639,4 +2741,3 @@
     }
   }
 ]
-
